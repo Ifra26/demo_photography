@@ -199,22 +199,17 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileMenuSection, setMobileMenuSection] =
-    useState<string | null>(null);
+  const [mobileMenuSection, setMobileMenuSection] = useState<string | null>(null);
 
   useEffect(() => {
     const updateHeader = () => setScrolled(window.scrollY > 30);
-
     updateHeader();
-
     window.addEventListener("scroll", updateHeader);
-
     return () => window.removeEventListener("scroll", updateHeader);
   }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
-
     return () => {
       document.body.style.overflow = "";
     };
@@ -284,11 +279,11 @@ export default function Home() {
           ".gallery-masonry-item, .service-img-wrapper, .styles article, .story img"
         )
         .forEach((item) => {
-          const image = item.matches("img")
+          const imageElement = item.matches("img")
             ? item
             : item.querySelector("img");
 
-          if (!image) return;
+          if (!imageElement) return;
 
           const enter = () => {
             gsap.to(item, {
@@ -297,7 +292,7 @@ export default function Home() {
               ease: "power2.out",
             });
 
-            gsap.to(image, {
+            gsap.to(imageElement, {
               scale: 1.06,
               filter: "brightness(1.08)",
               duration: 0.55,
@@ -312,7 +307,7 @@ export default function Home() {
               ease: "power2.out",
             });
 
-            gsap.to(image, {
+            gsap.to(imageElement, {
               scale: 1,
               filter: "brightness(1)",
               duration: 0.55,
@@ -360,7 +355,6 @@ export default function Home() {
 
   return (
     <main className="relative min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans">
-
       {/* Landing Section */}
       <section
         className="landing-hero relative min-h-screen w-full overflow-hidden bg-cover bg-center bg-no-repeat flex flex-col justify-between"
@@ -390,10 +384,9 @@ export default function Home() {
           aria-hidden="true"
         />
 
-        {/* Header */}
+        {/* Fixed Header */}
         <header className="fixed top-0 left-0 w-full z-50">
-
-          <div className="topbar hidden lg:flex">
+          <div className="topbar hidden xl:flex">
             <div className="socials">
               <a href="#" aria-label="Facebook">
                 <FaFacebookF />
@@ -423,7 +416,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Navbar */}
+          {/* Desktop & Mobile Navigation Bar */}
           <nav
             className={`home-nav ${
               scrolled
@@ -431,7 +424,7 @@ export default function Home() {
                 : "bg-gradient-to-b from-black/80 to-transparent"
             }`}
           >
-            {/* Desktop Left */}
+            {/* Desktop Navigation Left */}
             <div className="home-links left hidden xl:flex">
               <a className="active" href="#">
                 HOME
@@ -448,7 +441,7 @@ export default function Home() {
               />
             </div>
 
-            {/* Logo */}
+            {/* Centered Logo */}
             <a href="#" className="logo-link">
               <img
                 src={image("logo.webp")}
@@ -456,7 +449,7 @@ export default function Home() {
               />
             </a>
 
-            {/* Desktop Right */}
+            {/* Desktop Navigation Right */}
             <div className="home-links right hidden xl:flex">
               <MenuItem
                 label="LOCATION"
@@ -476,7 +469,7 @@ export default function Home() {
               </a>
             </div>
 
-            {/* Mobile Hamburger */}
+            {/* Mobile Hamburger Button */}
             <button
               type="button"
               aria-label={
@@ -487,105 +480,88 @@ export default function Home() {
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-navigation"
               onClick={() => {
-                setMobileMenuOpen(
-                  (open) => !open
-                );
-                setMobileMenuSection(null);
+                setMobileMenuOpen((open) => !open);
               }}
-              className={`mobile-menu-button xl:hidden flex flex-col space-y-1.5 ml-auto ${
+              className={`mobile-menu-button xl:hidden ${
                 mobileMenuOpen ? "is-open" : ""
               }`}
             >
-              <span className="w-6 h-0.5 bg-white" />
-              <span className="w-6 h-0.5 bg-white" />
-              <span className="w-6 h-0.5 bg-white" />
+              <span />
+              <span />
+              <span />
             </button>
           </nav>
 
-          {/* Mobile Menu */}
+          {/* Mobile Full-Width Dropdown Navigation Menu */}
           {mobileMenuOpen && (
             <div
               id="mobile-navigation"
-              className="mobile-menu"
+              className="mobile-menu xl:hidden"
             >
               <a
                 href="#"
-                onClick={() =>
-                  setMobileMenuOpen(false)
-                }
+                onClick={() => setMobileMenuOpen(false)}
               >
                 HOME
               </a>
 
-              {Object.entries(menus).map(
-                ([label, items]) => {
-                  const menuLabel =
-                    label === "what"
-                      ? "WHAT WE DO"
-                      : label.toUpperCase();
+              {Object.entries(menus).map(([key, items]) => {
+                const sectionLabels: Record<string, string> = {
+                  what: "WHAT WE DO",
+                  about: "ABOUT",
+                  location: "LOCATION",
+                  gallery: "GALLERY",
+                };
 
-                  const isOpen =
-                    mobileMenuSection === label;
+                const displayLabel = sectionLabels[key] || key.toUpperCase();
+                const isOpen = mobileMenuSection === key;
 
-                  return (
-                    <div
-                      className="mobile-menu-group"
-                      key={label}
+                return (
+                  <div className="mobile-menu-group" key={key}>
+                    <button
+                      type="button"
+                      className="mobile-menu-trigger"
+                      aria-expanded={isOpen}
+                      aria-controls={`mobile-submenu-${key}`}
+                      onClick={() =>
+                        setMobileMenuSection(isOpen ? null : key)
+                      }
                     >
-                      <button
-                        type="button"
-                        className="mobile-menu-trigger"
-                        aria-expanded={isOpen}
-                        aria-controls={`mobile-submenu-${label}`}
-                        onClick={() =>
-                          setMobileMenuSection(
-                            isOpen ? null : label
-                          )
-                        }
+                      <span>{displayLabel}</span>
+                      <FiChevronDown
+                        className={`transition-transform duration-200 ${
+                          isOpen ? "rotate-180" : ""
+                        }`}
+                        aria-hidden="true"
+                      />
+                    </button>
+
+                    {isOpen && (
+                      <div
+                        className="mobile-submenu"
+                        id={`mobile-submenu-${key}`}
                       >
-                        <span>{menuLabel}</span>
-
-                        <FiChevronDown
-                          className={`transition-transform duration-200 ${
-                            isOpen
-                              ? "rotate-180"
-                              : ""
-                          }`}
-                          aria-hidden="true"
-                        />
-                      </button>
-
-                      {isOpen && (
-                        <div
-                          className="mobile-submenu"
-                          id={`mobile-submenu-${label}`}
-                        >
-                          {items.map((item) => (
-                            <a
-                              href={menuHref(
-                                menuLabel,
-                                item
-                              )}
-                              key={item}
-                              onClick={() =>
-                                setMobileMenuOpen(false)
-                              }
-                            >
-                              {item}
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
-              )}
+                        {items.map((item) => (
+                          <a
+                            href={menuHref(displayLabel, item)}
+                            key={item}
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setMobileMenuSection(null);
+                            }}
+                          >
+                            {item}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
 
               <a
                 href="/contact"
-                onClick={() =>
-                  setMobileMenuOpen(false)
-                }
+                onClick={() => setMobileMenuOpen(false)}
               >
                 CONTACT
               </a>
@@ -593,7 +569,7 @@ export default function Home() {
           )}
         </header>
 
-        {/* Hero */}
+        {/* Hero Section */}
         <div className="hero-content-wrapper z-10">
           <div className="hero-copy">
             <h1 className="hero-title">
@@ -665,7 +641,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Services */}
+      {/* Services Section */}
       <section
         className="services-home reveal-section bg-white text-black py-20 px-6"
         id="services"
@@ -711,7 +687,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Story */}
+      {/* Story Section */}
       <section
         className="story reveal-section py-20 px-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
         id="about"
@@ -749,7 +725,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Styles */}
+      {/* Styles Section */}
       <section className="styles reveal-section py-20 px-6 bg-zinc-950">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-2xl md:text-3xl font-light tracking-widest mb-12">
@@ -797,13 +773,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FAQ */}
+      {/* FAQ Section */}
       <section
         className="faq-section reveal-section bg-[#f8f8f8] text-black py-28 px-8 md:px-16"
         id="faq"
       >
         <div className="faq-container max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_1.8fr] gap-16 lg:gap-24 items-start">
-
           <div className="faq-left">
             <h2 className="font-serif text-5xl md:text-6xl xl:text-[68px] leading-[1.08] mb-10 text-black uppercase tracking-wide font-normal">
               FREQUENTLY
@@ -863,13 +838,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Site Footer */}
       <footer
         className="site-footer reveal-section bg-black text-white pt-24 pb-12 px-8 border-t border-white/10"
         id="contact"
       >
         <div className="footer-container max-w-[1350px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center mb-20 items-start">
-
           <div className="footer-col flex flex-col items-center">
             <img
               src="/images/logo.webp"

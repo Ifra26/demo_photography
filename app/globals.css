@@ -5,6 +5,36 @@
   --gold: #c9a56c;
 }
 
+* {
+  box-sizing: border-box;
+}
+
+img,
+video {
+  max-width: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  color: #fff;
+  background: #000;
+  font-family: Inter, Arial, "Helvetica Neue", sans-serif;
+  font-size: 16px;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ==========================================================================
+   1. CONTACT PAGE STYLES
+   ========================================================================== */
 .contact-page {
   min-height: 100vh;
   background: #050505;
@@ -159,35 +189,8 @@
   font-size: 18px;
 }
 
-* {
-  box-sizing: border-box;
-}
-
-img,
-video {
-  max-width: 100%;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  overflow-x: hidden;
-  color: #fff;
-  background: #000;
-  font-family: Inter, Arial, "Helvetica Neue", sans-serif;
-  font-size: 16px;
-}
-
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
 /* ==========================================================================
-   1. HEADER & TOPBAR
+   2. HEADER & DESKTOP TOPBAR/NAVBAR
    ========================================================================== */
 .topbar {
   height: 38px;
@@ -271,16 +274,6 @@ a {
   padding-bottom: 2px;
 }
 
-.mobile-menu-button {
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-}
-
-.mobile-menu {
-  display: none;
-}
-
 .menu-trigger {
   position: relative;
   padding-bottom: 4px;
@@ -309,7 +302,7 @@ a {
 }
 
 /* ==========================================================================
-   2. LANDING HERO SECTION (Matched to Target Screenshot Layout)
+   3. LANDING HERO SECTION
    ========================================================================== */
 .landing-hero {
   min-height: 100vh;
@@ -373,7 +366,7 @@ a {
 }
 
 /* ==========================================================================
-   3. PHOTO GALLERY (Masonry Grid Layout)
+   4. PHOTO GALLERY (MASONRY GRID LAYOUT)
    ========================================================================== */
 .gallery-intro {
   width: 100%;
@@ -441,6 +434,9 @@ a {
   will-change: transform, filter;
 }
 
+/* ==========================================================================
+   5. LOCATION PAGE
+   ========================================================================== */
 .location-page {
   min-height: 100vh;
   background: #050505;
@@ -505,7 +501,7 @@ a {
 }
 
 /* ==========================================================================
-   4. SERVICES SECTION
+   6. SERVICES SECTION
    ========================================================================== */
 .services-home {
   background: #ffffff;
@@ -572,7 +568,7 @@ a {
 }
 
 /* ==========================================================================
-   5. STORY SECTION
+   7. STORY SECTION
    ========================================================================== */
 .story {
   display: grid;
@@ -612,7 +608,7 @@ a {
 }
 
 /* ==========================================================================
-   6. STYLES SECTION
+   8. STYLES SECTION
    ========================================================================== */
 .styles {
   padding: 80px 10%;
@@ -644,7 +640,7 @@ a {
 }
 
 /* ==========================================================================
-   7. FAQ SECTION (Scaled Up & Matched to Reference Screenshot)
+   9. FAQ SECTION
    ========================================================================== */
 .faq-section {
   padding: 110px 8%;
@@ -747,7 +743,7 @@ a {
 }
 
 /* ==========================================================================
-   8. FOOTER SECTION (Scaled Up Text, Headings & Social Icons)
+   10. FOOTER SECTION
    ========================================================================== */
 .site-footer {
   background-color: #000000;
@@ -812,7 +808,7 @@ a {
 }
 
 /* ==========================================================================
-   9. RESPONSIVE BREAKPOINTS
+   11. GENERAL RESPONSIVE MEDIA QUERIES
    ========================================================================== */
 @media (max-width: 1280px) {
   .hero-title {
@@ -823,98 +819,150 @@ a {
   }
 }
 
+/* ==========================================================================
+   12. CONSOLIDATED MOBILE NAVBAR (< 1280px)
+   ========================================================================== */
 @media (max-width: 1279px) {
   .topbar {
-    display: none;
+    display: none !important;
   }
+
   .home-nav {
-    height: 68px;
-    padding: 0 24px;
-  }
-  .home-nav .logo-link img {
-    width: 150px;
-  }
-  .mobile-menu {
-    position: absolute;
-    top: 68px;
+    position: fixed;
+    top: 0;
     left: 0;
     right: 0;
-    display: flex;
-    flex-direction: column;
-    max-height: calc(100vh - 68px);
-    overflow-y: auto;
-    padding: 12px 24px 18px;
-    background: rgba(0, 0, 0, 0.97);
-    border-top: 1px solid rgba(255, 255, 255, 0.14);
-    z-index: 60;
-    animation: mobile-menu-in 180ms ease-out both;
-  }
-  .home-nav.scrolled ~ .mobile-menu {
-    top: 65px;
-    max-height: calc(100vh - 65px);
-  }
-  .mobile-menu > a,
-  .mobile-menu-trigger {
     width: 100%;
-    padding: 14px 0;
-    color: #fff;
-    font: inherit;
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-align: left;
-    border: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    background: transparent;
-  }
-  .mobile-menu-trigger {
+    height: 68px;
+    padding: 0 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    cursor: pointer;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
   }
-  .mobile-menu-trigger svg {
-    transition: transform 180ms ease;
+
+  .home-nav.scrolled {
+    height: 68px;
+    background: rgba(0, 0, 0, 0.98);
   }
-  .mobile-menu-trigger[aria-expanded="true"] svg {
-    transform: rotate(180deg);
+
+  .logo-link {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
   }
-  .mobile-submenu {
+
+  .logo-link img {
+    width: 140px;
+    max-width: 45vw;
+    height: auto;
+  }
+
+  /* Hamburger Toggle Button */
+  .mobile-menu-button {
     display: flex;
     flex-direction: column;
-    padding: 4px 0 8px 14px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-    animation: mobile-submenu-in 180ms ease-out both;
-  }
-  .mobile-submenu a {
-    padding: 11px 0;
-    color: #cfcfcf;
-    font-size: 11px;
-    line-height: 1.4;
-    letter-spacing: 0.1em;
-  }
-  .mobile-menu-group {
-    border: 0;
-  }
-  .mobile-menu-button {
-    position: relative;
-    z-index: 1;
-    width: 28px;
-    height: 24px;
-    padding: 3px 0;
     justify-content: space-between;
+    margin-left: auto;
+    width: 26px;
+    height: 20px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1001;
   }
+
   .mobile-menu-button span {
-    transition: transform 180ms ease, opacity 180ms ease;
+    display: block;
+    width: 100%;
+    height: 2px;
+    background-color: #ffffff;
+    transition: transform 0.25s ease, opacity 0.25s ease;
   }
+
+  /* Morph to Close (X) Icon */
   .mobile-menu-button.is-open span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
+    transform: translateY(9px) rotate(45deg);
   }
+
   .mobile-menu-button.is-open span:nth-child(2) {
     opacity: 0;
   }
+
   .mobile-menu-button.is-open span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
+    transform: translateY(-9px) rotate(-45deg);
   }
+
+  /* Full-width Mobile Menu Dropdown */
+  .mobile-menu {
+    position: fixed;
+    top: 68px;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    max-height: calc(100vh - 68px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: rgba(5, 5, 5, 0.98);
+    backdrop-filter: blur(14px);
+    padding: 12px 24px 32px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    z-index: 999;
+    animation: mobile-menu-in 0.2s ease-out forwards;
+  }
+
+  .mobile-menu > a,
+  .mobile-menu-trigger {
+    width: 100%;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .mobile-menu-group {
+    border: none;
+  }
+
+  .mobile-submenu {
+    display: flex;
+    flex-direction: column;
+    padding: 6px 0 10px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    animation: mobile-submenu-in 0.2s ease-out forwards;
+  }
+
+  .mobile-submenu a {
+    display: block;
+    padding: 10px 0;
+    color: #cccccc;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+  }
+
+  .mobile-submenu a:hover,
+  .mobile-submenu a:active {
+    color: var(--gold, #c9a56c);
+  }
+
+  /* Other layout breakpoint changes */
   .hero-content-wrapper {
     padding-left: 8%;
     padding-right: 8%;
@@ -950,7 +998,7 @@ a {
 @keyframes mobile-menu-in {
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
   to {
     opacity: 1;
@@ -969,20 +1017,24 @@ a {
   }
 }
 
+/* ==========================================================================
+   13. SMALL MOBILE SCREEN ADJUSTMENTS (< 640px)
+   ========================================================================== */
 @media (max-width: 640px) {
-  .topbar {
-    display: none;
-  }
   .home-nav {
-    height: 68px;
-    padding: 0 20px;
+    padding: 0 18px;
   }
-  .home-nav .logo-link img {
-    width: 140px;
+  .logo-link img {
+    width: 125px;
   }
   .mobile-menu {
     padding-left: 20px;
     padding-right: 20px;
+  }
+  .mobile-menu > a,
+  .mobile-menu-trigger {
+    font-size: 11px;
+    min-height: 50px;
   }
   .landing-hero {
     min-height: 760px;
@@ -1116,95 +1168,4 @@ a {
     gap: 12px;
     text-align: center;
   }
-}
-/* ===== MOBILE NAVBAR FIX ===== */
-
-@media (max-width: 1279px) {
-.home-nav {
-height: 68px;
-padding: 0 20px;
-position: fixed;
-top: 0;
-left: 0;
-background: rgba(0, 0, 0, 0.88);
-backdrop-filter: blur(10px);
-}
-
-.home-nav.scrolled {
-height: 68px;
-background: rgba(0, 0, 0, 0.95);
-}
-
-.logo-link {
-position: absolute;
-left: 50%;
-top: 50%;
-transform: translate(-50%, -50%);
-}
-
-.logo-link img {
-width: 140px;
-max-width: 45vw;
-}
-
-.mobile-menu-button {
-display: flex;
-margin-left: auto;
-width: 28px;
-height: 24px;
-z-index: 100;
-}
-
-.mobile-menu {
-position: fixed;
-top: 68px;
-left: 0;
-right: 0;
-width: 100%;
-max-height: calc(100vh - 68px);
-overflow-y: auto;
-padding: 10px 22px 25px;
-background: rgba(0, 0, 0, 0.98);
-backdrop-filter: blur(12px);
-z-index: 999;
-}
-
-.mobile-menu > a,
-.mobile-menu-trigger {
-min-height: 52px;
-display: flex;
-align-items: center;
-justify-content: space-between;
-}
-
-.mobile-submenu {
-padding: 4px 0 8px 16px;
-}
-
-.mobile-submenu a {
-display: block;
-padding: 12px 0;
-font-size: 10px;
-line-height: 1.5;
-}
-}
-
-@media (max-width: 640px) {
-.home-nav {
-padding: 0 18px;
-}
-
-.logo-link img {
-width: 125px;
-}
-
-.mobile-menu {
-padding: 8px 20px 24px;
-}
-
-.mobile-menu > a,
-.mobile-menu-trigger {
-font-size: 11px;
-min-height: 50px;
-}
 }
