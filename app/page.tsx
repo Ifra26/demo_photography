@@ -126,20 +126,27 @@ const menus = {
 
 
 
+const menuHref = (label: string, item: string) =>
+  label === "LOCATION" ? `/location/${locationSlug(item)}` : "#services";
+
 function MenuItem({ label, items }: { label: string; items?: string[] }) {
   return (
     <div className="menu-item relative group py-2">
-      <a href="#" className="menu-trigger flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+      <button
+        type="button"
+        className="menu-trigger flex items-center gap-1.5 hover:opacity-80 transition-opacity"
+        aria-haspopup={items ? "true" : undefined}
+      >
         <span>{label}</span>
         {items && (
           <FiChevronDown className="text-[11px] text-white/80 group-hover:rotate-180 transition-transform duration-200" />
         )}
-      </a>
+      </button>
       {items && (
-        <div className="dropdown absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:flex flex-col bg-black/95 border border-white/10 min-w-[220px] py-3 z-50 shadow-2xl">
+        <div className="dropdown absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:flex group-focus-within:flex flex-col bg-black/95 border border-white/10 min-w-[220px] py-3 z-50 shadow-2xl">
           {items.map((item) => (
             <a
-              href={label === "LOCATION" ? `/location/${locationSlug(item)}` : "#services"}
+              href={menuHref(label, item)}
               key={item}
               className="px-5 py-2 text-[11px] text-gray-300 hover:text-white hover:bg-white/10 transition-colors tracking-wider"
             >
@@ -155,6 +162,7 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuSection, setMobileMenuSection] = useState<string | null>(null);
 
   useEffect(() => {
     const updateHeader = () => setScrolled(window.scrollY > 30);
@@ -162,6 +170,13 @@ export default function Home() {
     window.addEventListener("scroll", updateHeader);
     return () => window.removeEventListener("scroll", updateHeader);
   }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [mobileMenuOpen]);
 
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -281,7 +296,7 @@ export default function Home() {
           </div>
 
           <nav className={`home-nav ${scrolled ? "scrolled" : "bg-gradient-to-b from-black/80 to-transparent"}`}>
-            <div className="home-links left hidden lg:flex">
+            <div className="home-links left hidden xl:flex">
               <a className="active" href="#">HOME</a>
               <MenuItem label="WHAT WE DO" items={menus.what} />
               <MenuItem label="ABOUT" items={menus.about} />
@@ -291,7 +306,7 @@ export default function Home() {
               <img src={image("logo.webp")} alt="Waseem Saleem Photography" />
             </a>
 
-            <div className="home-links right hidden lg:flex">
+            <div className="home-links right hidden xl:flex">
               <MenuItem label="LOCATION" items={menus.location} />
               <MenuItem label="GALLERY" items={menus.gallery} />
               <a href="/contact" className="hover:opacity-80 transition-opacity">CONTACT</a>
@@ -300,8 +315,11 @@ export default function Home() {
             <button
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
               aria-expanded={mobileMenuOpen}
-              onClick={() => setMobileMenuOpen((open) => !open)}
-              className="mobile-menu-button lg:hidden flex flex-col space-y-1.5 ml-auto"
+              onClick={() => {
+                setMobileMenuOpen((open) => !open);
+                setMobileMenuSection(null);
+              }}
+              className={`mobile-menu-button xl:hidden flex flex-col space-y-1.5 ml-auto ${mobileMenuOpen ? "is-open" : ""}`}
             >
               <span className="w-6 h-0.5 bg-white" />
               <span className="w-6 h-0.5 bg-white" />
@@ -310,10 +328,39 @@ export default function Home() {
           </nav>
           {mobileMenuOpen && (
             <div className="mobile-menu">
-              <a href="#gallery" onClick={() => setMobileMenuOpen(false)}>GALLERY</a>
-              <a href="#services" onClick={() => setMobileMenuOpen(false)}>WHAT WE DO</a>
-              <a href="#about" onClick={() => setMobileMenuOpen(false)}>ABOUT</a>
-              <a href="/contact">CONTACT</a>
+              <a href="#" onClick={() => setMobileMenuOpen(false)}>HOME</a>
+              {Object.entries(menus).map(([label, items]) => {
+                const menuLabel = label === "what" ? "WHAT WE DO" : label.toUpperCase();
+                const isOpen = mobileMenuSection === label;
+                return (
+                  <div className="mobile-menu-group" key={label}>
+                    <button
+                      type="button"
+                      className="mobile-menu-trigger"
+                      aria-expanded={isOpen}
+                      aria-controls={`mobile-submenu-${label}`}
+                      onClick={() => setMobileMenuSection(isOpen ? null : label)}
+                    >
+                      <span>{menuLabel}</span>
+                      <FiChevronDown aria-hidden="true" />
+                    </button>
+                    {isOpen && (
+                      <div className="mobile-submenu" id={`mobile-submenu-${label}`}>
+                        {items.map((item) => (
+                          <a
+                            href={menuHref(menuLabel, item)}
+                            key={item}
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            {item}
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              <a href="/contact" onClick={() => setMobileMenuOpen(false)}>CONTACT</a>
             </div>
           )}
         </header>
