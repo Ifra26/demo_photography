@@ -445,6 +445,7 @@ a {
   width: 100%;
   margin: 0 0 2px;
   overflow: hidden;
+  backface-visibility: hidden;
 }
 
 .gallery-masonry-item img {
@@ -470,6 +471,15 @@ a {
 .styles article img,
 .story img {
   will-change: transform, filter;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-masonry-item,
+  .gallery-masonry-item img {
+    clip-path: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 /* ==========================================================================
@@ -916,7 +926,7 @@ a {
 
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
 
     background: rgba(5, 5, 5, 0.98);
 
@@ -937,26 +947,28 @@ a {
   }
 
   /* ---------------------------------------------------------
-     CENTER LOGO
+     LEFT LOGO + RIGHT HAMBURGER (flex space-between)
      --------------------------------------------------------- */
 
   .logo-link {
-    position: absolute;
+    position: static;
 
-    left: 20px;
-    top: 50%;
+    left: auto;
+    top: auto;
 
     width: max-content;
     height: auto;
 
-    transform: translateY(-50%);
+    transform: none;
 
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 
     margin: 0;
     padding: 0;
+
+    flex-shrink: 0;
 
     z-index: 100002;
   }
@@ -977,18 +989,18 @@ a {
      --------------------------------------------------------- */
 
   .mobile-menu-button {
-    position: absolute;
+    position: static;
 
-    right: 20px;
-    top: 50%;
+    right: auto;
+    top: auto;
 
     width: 28px;
     height: 22px;
 
-    margin: 0;
+    margin: 0 0 0 auto;
     padding: 0;
 
-    transform: translateY(-50%);
+    transform: none;
 
     display: flex;
     flex-direction: column;
@@ -1328,8 +1340,6 @@ a {
      --------------------------------------------------------- */
 
   .mobile-menu-button {
-    right: 18px;
-
     width: 27px;
     height: 21px;
   }

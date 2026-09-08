@@ -491,86 +491,140 @@ export default function Home() {
         });
 
       /* ---------------------------------------------------
-         PHOTO GALLERY — cinematic scroll experience
+         PHOTO GALLERY — Grounded-inspired scroll reveal
 
-         Desktop/tablet: fade + rise + scale reveal, funke
-         image ke andar subtle scrub-based parallax (depth.
-         Mobile: lighter fade + rise (no scale/parallax, taaki
-         scrolling smooth rahe aur performance hit na ho. 
+         Scroll-scrubbed clip/translate/scale per tile;
+         editorial presets vary direction per image.
+         Mobile: lighter scrub (translate/opacity only).
          --------------------------------------------------- */
 
-      mm.add("(min-width: 768px)", () => {
+      const galleryRevealPresets = [
+        { y: 72, x: 0, scale: 1.12, clipPath: "inset(0% 0% 100% 0%)" },
+        { y: 56, x: -30, scale: 1.1, clipPath: "inset(100% 0% 0% 0%)" },
+        { y: 64, x: 30, scale: 1.11, clipPath: "inset(0% 0% 100% 0%)" },
+        { y: 50, x: -18, scale: 1.09, clipPath: "inset(0% 100% 0% 0%)" },
+        { y: 58, x: 18, scale: 1.1, clipPath: "inset(100% 0% 0% 0%)" },
+        { y: 46, x: 0, scale: 1.08, clipPath: "inset(0% 0% 100% 0%)" },
+      ] as const;
+
+      const bindGalleryScrollReveal = ({
+        start,
+        end,
+        scrub,
+        parallaxRange,
+        parallaxScrub,
+        useClip,
+        useScale,
+      }: {
+        start: string;
+        end: string;
+        scrub: number;
+        parallaxRange: number;
+        parallaxScrub: number;
+        useClip: boolean;
+        useScale: boolean;
+      }) => {
         gsap.utils
           .toArray<HTMLElement>(".gallery-masonry-item")
-          .forEach((item) => {
+          .forEach((item, index) => {
             const img = item.querySelector("img");
             if (!img) return;
 
-            /* Cinematic reveal — plays once, stays visible */
+            const preset =
+              galleryRevealPresets[
+                index % galleryRevealPresets.length
+              ];
+
             gsap.fromTo(
               item,
               {
-                opacity: 0,
-                y:  60,
-                scale: 0.94,
-                transformOrigin: "center center",
+                opacity: 0.2,
+                y: preset.y,
+                x: preset.x,
+                ...(useClip
+                  ? { clipPath: preset.clipPath }
+                  : {}),
               },
               {
                 opacity: 1,
-                y:  0,
-                scale: 1,
-                duration:  1.15,
-                ease: "power3.out",
-                scrollTrigger: {
-                  trigger: item,
-                  start: "top 90%",
-                  toggleActions: "play none none none",
-                },
-              }
-            );
-
-            /* Subtle parallax depth — scrubbed with scroll.
-               (img overflow:hidden wrapper ke andar ghuma — no layout shift.) */
-            gsap.fromTo(
-              img,
-              { yPercent: -6 },
-              {
-                yPercent: 6,
+                y: 0,
+                x: 0,
+                ...(useClip
+                  ? { clipPath: "inset(0% 0% 0% 0%)" }
+                  : {}),
                 ease: "none",
                 scrollTrigger: {
                   trigger: item,
-                  start: "top bottom",
-                  end: "bottom top",
-                  scrub: 0.6,
+                  start,
+                  end,
+                  scrub,
                 },
               }
             );
-          });
-      });
 
-      mm.add("(max-width: 767px)", () => {
-        gsap.utils
-          .toArray<HTMLElement>(".gallery-masonry-item")
-          .forEach((item) => {
-            gsap.fromTo(
-              item,
-              {
-                opacity: 0,
-                y:  26,
-              },
-              {
-                opacity: 1,
-                y:  0,
-                duration:  0.9,
-                ease: "power2.out",
-                scrollTrigger: {
-                  trigger: item,
-                  start: "top 92%",
-                  toggleActions: "play none none none",
+            if (useScale) {
+              gsap.fromTo(
+                img,
+                {
+                  scale: preset.scale,
+                  transformOrigin: "center center",
                 },
-              }
-            );
+                {
+                  scale: 1,
+                  ease: "none",
+                  scrollTrigger: {
+                    trigger: item,
+                    start,
+                    end,
+                    scrub,
+                  },
+                }
+              );
+            }
+
+            if (parallaxRange > 0) {
+              gsap.fromTo(
+                img,
+                { yPercent: -parallaxRange },
+                {
+                  yPercent: parallaxRange,
+                  ease: "none",
+                  scrollTrigger: {
+                    trigger: item,
+                    start: "top bottom",
+                    end: "bottom top",
+                    scrub: parallaxScrub,
+                  },
+                }
+              );
+            }
           });
+      };
+
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        mm.add("(min-width: 768px)", () => {
+          bindGalleryScrollReveal({
+            start: "top 94%",
+            end: "top 38%",
+            scrub: 0.85,
+            parallaxRange: 6,
+            parallaxScrub: 0.65,
+            useClip: true,
+            useScale: true,
+          });
+        });
+
+        mm.add("(max-width: 767px)", () => {
+          bindGalleryScrollReveal({
+            start: "top 96%",
+            end: "top 52%",
+            scrub: 0.55,
+            parallaxRange: 0,
+            parallaxScrub: 0,
+            useClip: false,
+            useScale: false,
+          });
+        });
       });
 
       /* Image hover */
