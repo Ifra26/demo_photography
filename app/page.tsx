@@ -385,7 +385,7 @@ export default function Home() {
         />
 
         {/* Fixed Header */}
-        <header className="fixed top-0 left-0 w-full z-50">
+        <header className="site-header">
           <div className="topbar hidden xl:flex">
             <div className="socials">
               <a href="#" aria-label="Facebook">
