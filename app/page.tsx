@@ -418,6 +418,8 @@ export default function Home() {
       () => void
     > = [];
 
+    const mm = gsap.matchMedia();
+
     const context = gsap.context(() => {
       /* Hero animation */
 
@@ -472,7 +474,7 @@ export default function Home() {
 
       gsap.utils
         .toArray<HTMLElement>(
-          ".gallery-masonry-item, .service-card, .styles article, .faq-item, .footer-col"
+          ".service-card, .styles article, .faq-item, .footer-col"
         )
         .forEach((item) => {
           gsap.from(item, {
@@ -487,6 +489,89 @@ export default function Home() {
             },
           });
         });
+
+      /* ---------------------------------------------------
+         PHOTO GALLERY — cinematic scroll experience
+
+         Desktop/tablet: fade + rise + scale reveal, funke
+         image ke andar subtle scrub-based parallax (depth.
+         Mobile: lighter fade + rise (no scale/parallax, taaki
+         scrolling smooth rahe aur performance hit na ho. 
+         --------------------------------------------------- */
+
+      mm.add("(min-width: 768px)", () => {
+        gsap.utils
+          .toArray<HTMLElement>(".gallery-masonry-item")
+          .forEach((item) => {
+            const img = item.querySelector("img");
+            if (!img) return;
+
+            /* Cinematic reveal — plays once, stays visible */
+            gsap.fromTo(
+              item,
+              {
+                opacity: 0,
+                y:  60,
+                scale: 0.94,
+                transformOrigin: "center center",
+              },
+              {
+                opacity: 1,
+                y:  0,
+                scale: 1,
+                duration:  1.15,
+                ease: "power3.out",
+                scrollTrigger: {
+                  trigger: item,
+                  start: "top 90%",
+                  toggleActions: "play none none none",
+                },
+              }
+            );
+
+            /* Subtle parallax depth — scrubbed with scroll.
+               (img overflow:hidden wrapper ke andar ghuma — no layout shift.) */
+            gsap.fromTo(
+              img,
+              { yPercent: -6 },
+              {
+                yPercent: 6,
+                ease: "none",
+                scrollTrigger: {
+                  trigger: item,
+                  start: "top bottom",
+                  end: "bottom top",
+                  scrub: 0.6,
+                },
+              }
+            );
+          });
+      });
+
+      mm.add("(max-width: 767px)", () => {
+        gsap.utils
+          .toArray<HTMLElement>(".gallery-masonry-item")
+          .forEach((item) => {
+            gsap.fromTo(
+              item,
+              {
+                opacity: 0,
+                y:  26,
+              },
+              {
+                opacity: 1,
+                y:  0,
+                duration:  0.9,
+                ease: "power2.out",
+                scrollTrigger: {
+                  trigger: item,
+                  start: "top 92%",
+                  toggleActions: "play none none none",
+                },
+              }
+            );
+          });
+      });
 
       /* Image hover */
 
@@ -561,6 +646,8 @@ export default function Home() {
         (removeListener) =>
           removeListener()
       );
+
+      mm.revert();
 
       context.revert();
     };
