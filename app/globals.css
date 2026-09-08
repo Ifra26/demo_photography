@@ -459,13 +459,61 @@ a {
   will-change: transform;
 }
 
-.gallery-masonry-item,
+/* Horizontal scroll-driven gallery track */
+.gallery-horizontal {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.gallery-horizontal-pin {
+  width: 100%;
+  height: 100vh;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.gallery-horizontal-viewport {
+  width: 100%;
+  overflow: hidden;
+}
+
+.gallery-horizontal-track {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: clamp(14px, 2vw, 28px);
+  padding: 0 clamp(20px, 4vw, 56px);
+  will-change: transform;
+}
+
+.gallery-horizontal-item {
+  flex: 0 0 auto;
+  width: clamp(300px, 28vw, 460px);
+  height: clamp(380px, 62vh, 560px);
+  overflow: hidden;
+  backface-visibility: hidden;
+}
+
+.gallery-horizontal-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  will-change: transform;
+}
+
+.gallery-horizontal-item,
 .service-img-wrapper,
 .styles article,
 .story img {
   will-change: transform;
 }
 
+.gallery-horizontal-item img,
 .gallery-masonry-item img,
 .service-img-wrapper img,
 .styles article img,
@@ -474,6 +522,35 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .gallery-horizontal-pin {
+    position: static;
+    height: auto;
+    min-height: 0;
+  }
+
+  .gallery-horizontal-viewport {
+    overflow: visible;
+  }
+
+  .gallery-horizontal-track {
+    flex-wrap: wrap;
+    justify-content: center;
+    transform: none !important;
+    gap: 2px;
+    padding: 0;
+  }
+
+  .gallery-horizontal-item {
+    width: calc(33.333% - 2px);
+    height: auto;
+    aspect-ratio: 4 / 5;
+  }
+
+  .gallery-horizontal-item img {
+    height: 100%;
+    transform: none !important;
+  }
+
   .gallery-masonry-item,
   .gallery-masonry-item img {
     clip-path: none !important;
@@ -1269,8 +1346,13 @@ a {
     grid-template-columns: 1fr;
   }
 
-  .gallery-masonry {
-    columns: 2 260px;
+  .gallery-horizontal-item {
+    width: clamp(260px, 42vw, 380px);
+    height: clamp(340px, 54vh, 480px);
+  }
+
+  .gallery-horizontal-pin {
+    min-height: 460px;
   }
 
   .faq-left h2 {
@@ -1431,17 +1513,18 @@ a {
     font-size: 14px;
   }
 
-  .gallery-masonry {
-    columns: 1;
-    padding: 0 12px;
+  .gallery-horizontal-track {
+    gap: clamp(10px, 3vw, 16px);
+    padding: 0 16px;
   }
 
-  .gallery-masonry-item img {
-    width: 100%;
-    height: auto;
-    max-height: none;
-    object-fit: contain;
-    object-position: center;
+  .gallery-horizontal-item {
+    width: clamp(220px, 78vw, 300px);
+    height: clamp(300px, 48vh, 420px);
+  }
+
+  .gallery-horizontal-pin {
+    min-height: 380px;
   }
 
   /* ---------------------------------------------------------

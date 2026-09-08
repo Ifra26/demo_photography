@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useState } from "react";
-import type { MouseEvent } from "react";
 
 import {
   FaFacebookF,
@@ -491,147 +490,137 @@ export default function Home() {
         });
 
       /* ---------------------------------------------------
-         PHOTO GALLERY — Grounded-inspired scroll reveal
+         PHOTO GALLERY — scroll-driven horizontal track
 
-         Scroll-scrubbed clip/translate/scale per tile;
-         editorial presets vary direction per image.
-         Mobile: lighter scrub (translate/opacity only).
+         Vertical scroll pins the gallery and scrubs the
+         track horizontally; distance is measured dynamically.
          --------------------------------------------------- */
 
-      const galleryRevealPresets = [
-        { y: 72, x: 0, scale: 1.12, clipPath: "inset(0% 0% 100% 0%)" },
-        { y: 56, x: -30, scale: 1.1, clipPath: "inset(100% 0% 0% 0%)" },
-        { y: 64, x: 30, scale: 1.11, clipPath: "inset(0% 0% 100% 0%)" },
-        { y: 50, x: -18, scale: 1.09, clipPath: "inset(0% 100% 0% 0%)" },
-        { y: 58, x: 18, scale: 1.1, clipPath: "inset(100% 0% 0% 0%)" },
-        { y: 46, x: 0, scale: 1.08, clipPath: "inset(0% 0% 100% 0%)" },
-      ] as const;
+      const bindGalleryHorizontalScroll = (
+        scrub: number
+      ) => {
+        const section = document.querySelector<HTMLElement>(
+          ".gallery-horizontal"
+        );
+        const track = document.querySelector<HTMLElement>(
+          ".gallery-horizontal-track"
+        );
+        const viewport = document.querySelector<HTMLElement>(
+          ".gallery-horizontal-viewport"
+        );
 
-      const bindGalleryScrollReveal = ({
-        start,
-        end,
-        scrub,
-        parallaxRange,
-        parallaxScrub,
-        useClip,
-        useScale,
-      }: {
-        start: string;
-        end: string;
-        scrub: number;
-        parallaxRange: number;
-        parallaxScrub: number;
-        useClip: boolean;
-        useScale: boolean;
-      }) => {
+        if (!section || !track || !viewport) return;
+
+        const getDistance = () =>
+          Math.max(
+            0,
+            track.scrollWidth - viewport.clientWidth
+          );
+
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: () => `+=${getDistance()}`,
+            pin: ".gallery-horizontal-pin",
+            scrub,
+            invalidateOnRefresh: true,
+            anticipatePin: 1,
+          },
+        });
+
+        timeline.to(
+          track,
+          {
+            x: () => -getDistance(),
+            ease: "none",
+          },
+          0
+        );
+
         gsap.utils
-          .toArray<HTMLElement>(".gallery-masonry-item")
+          .toArray<HTMLElement>(
+            ".gallery-horizontal-item"
+          )
           .forEach((item, index) => {
             const img = item.querySelector("img");
             if (!img) return;
 
-            const preset =
-              galleryRevealPresets[
-                index % galleryRevealPresets.length
-              ];
+            const depth =
+              index % 3 === 0
+                ? 1.028
+                : index % 3 === 1
+                  ? 1.02
+                  : 1.024;
+            const shift =
+              index % 2 === 0 ? -6 : 6;
 
-            gsap.fromTo(
-              item,
+            timeline.fromTo(
+              img,
               {
-                opacity: 0.2,
-                y: preset.y,
-                x: preset.x,
-                ...(useClip
-                  ? { clipPath: preset.clipPath }
-                  : {}),
+                scale: depth,
+                x: shift,
+                transformOrigin: "center center",
               },
               {
-                opacity: 1,
-                y: 0,
+                scale: 1,
                 x: 0,
-                ...(useClip
-                  ? { clipPath: "inset(0% 0% 0% 0%)" }
-                  : {}),
                 ease: "none",
-                scrollTrigger: {
-                  trigger: item,
-                  start,
-                  end,
-                  scrub,
-                },
-              }
+              },
+              0
             );
-
-            if (useScale) {
-              gsap.fromTo(
-                img,
-                {
-                  scale: preset.scale,
-                  transformOrigin: "center center",
-                },
-                {
-                  scale: 1,
-                  ease: "none",
-                  scrollTrigger: {
-                    trigger: item,
-                    start,
-                    end,
-                    scrub,
-                  },
-                }
-              );
-            }
-
-            if (parallaxRange > 0) {
-              gsap.fromTo(
-                img,
-                { yPercent: -parallaxRange },
-                {
-                  yPercent: parallaxRange,
-                  ease: "none",
-                  scrollTrigger: {
-                    trigger: item,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: parallaxScrub,
-                  },
-                }
-              );
-            }
           });
+
+        const images =
+          track.querySelectorAll<HTMLImageElement>(
+            "img"
+          );
+
+        void Promise.all(
+          Array.from(images).map(
+            (img) =>
+              new Promise<void>((resolve) => {
+                if (img.complete) {
+                  resolve();
+                  return;
+                }
+
+                img.addEventListener(
+                  "load",
+                  () => resolve(),
+                  { once: true }
+                );
+
+                img.addEventListener(
+                  "error",
+                  () => resolve(),
+                  { once: true }
+                );
+              })
+          )
+        ).then(() => {
+          ScrollTrigger.refresh();
+        });
       };
 
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        mm.add("(min-width: 768px)", () => {
-          bindGalleryScrollReveal({
-            start: "top 94%",
-            end: "top 38%",
-            scrub: 0.85,
-            parallaxRange: 6,
-            parallaxScrub: 0.65,
-            useClip: true,
-            useScale: true,
+      mm.add(
+        "(prefers-reduced-motion: no-preference)",
+        () => {
+          mm.add("(min-width: 768px)", () => {
+            bindGalleryHorizontalScroll(1);
           });
-        });
 
-        mm.add("(max-width: 767px)", () => {
-          bindGalleryScrollReveal({
-            start: "top 96%",
-            end: "top 52%",
-            scrub: 0.55,
-            parallaxRange: 0,
-            parallaxScrub: 0,
-            useClip: false,
-            useScale: false,
+          mm.add("(max-width: 767px)", () => {
+            bindGalleryHorizontalScroll(0.75);
           });
-        });
-      });
+        }
+      );
 
       /* Image hover */
 
       gsap.utils
         .toArray<HTMLElement>(
-          ".gallery-masonry-item, .service-img-wrapper, .styles article, .story img"
+          ".gallery-horizontal-item, .service-img-wrapper, .styles article, .story img"
         )
         .forEach((item) => {
           const imageElement =
@@ -706,26 +695,6 @@ export default function Home() {
       context.revert();
     };
   }, []);
-
-  /* =======================================================
-     IMAGE ZOOM
-     ======================================================= */
-
-  const zoomImage = (
-    event: MouseEvent<HTMLElement>,
-    scale: number
-  ) => {
-    const target =
-      event.currentTarget.querySelector("img");
-
-    if (target) {
-      gsap.to(target, {
-        scale,
-        duration: 0.55,
-        ease: "power2.out",
-      });
-    }
-  };
 
   /* =======================================================
      FAQ
@@ -1166,28 +1135,35 @@ export default function Home() {
           experience from us.
         </p>
 
-        <div className="gallery-masonry">
+        <div className="gallery-horizontal">
 
-          {gallery.map(
-            ([src, alt]) => (
-              <div
-                key={src}
-                className="gallery-masonry-item"
-                onMouseEnter={(event) =>
-                  zoomImage(event, 1.07)
-                }
-                onMouseLeave={(event) =>
-                  zoomImage(event, 1)
-                }
-              >
-                <img
-                  src={image(src)}
-                  alt={alt}
-                  loading="eager"
-                />
+          <div className="gallery-horizontal-pin">
+
+            <div className="gallery-horizontal-viewport">
+
+              <div className="gallery-horizontal-track">
+
+                {gallery.map(
+                  ([src, alt]) => (
+                    <div
+                      key={src}
+                      className="gallery-horizontal-item"
+                    >
+                      <img
+                        src={image(src)}
+                        alt={alt}
+                        loading="eager"
+                        decoding="async"
+                      />
+                    </div>
+                  )
+                )}
+
               </div>
-            )
-          )}
+
+            </div>
+
+          </div>
 
         </div>
 
