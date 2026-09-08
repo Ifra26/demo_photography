@@ -1,7 +1,9 @@
+
 "use client";
 
 import { useEffect, useLayoutEffect, useState } from "react";
 import type { MouseEvent } from "react";
+
 import {
   FaFacebookF,
   FaYoutube,
@@ -9,7 +11,13 @@ import {
   FaEnvelope,
   FaPhoneAlt,
 } from "react-icons/fa";
-import { FiPlus, FiMinus, FiChevronDown } from "react-icons/fi";
+
+import {
+  FiPlus,
+  FiMinus,
+  FiChevronDown,
+} from "react-icons/fi";
+
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -20,111 +28,240 @@ const locationSlug = (label: string) => {
     .toLowerCase()
     .match(/(lahore|karachi|islamabad|dubai)$/)?.[1];
 
-  return city ?? label.toLowerCase().replace(/\s+/g, "-");
+  return (
+    city ??
+    label.toLowerCase().replace(/\s+/g, "-")
+  );
 };
 
+/* =========================================================
+   GALLERY
+   ========================================================= */
+
 const gallery = [
-  ["Waseem-Saleem-light-and-bright-gallery6-768x768.webp", "Wedding Photographer in Lahore"],
-  ["DSC08333.JPG-insta-2-768x512.jpg", "Pre-wedding photoshoot couple"],
-  ["MGL2923-1-scaled-1-683x1024.jpg", "Wedding Couple Candid"],
-  ["IMG_1499-Insta-1-768x512.jpg", "Female Photographer Wedding Shoot"],
-  ["waseemsaleemphotography_2-741x1024.jpg", "Wedding photography"],
-  ["02-scaled-1-768x512.jpg", "Outdoor Wedding Session"],
-  ["Waseem-Saleem-light-and-bright-gallery8-768x768.webp", "Bride and groom portrait"],
-  ["Waseem-Saleem-light-and-bright-gallery11-768x768.webp", "Wedding reception"],
-  ["home-main-gallery6-2-768x512.webp", "Candid wedding moment"],
-  ["home-main-gallery6-768x512.webp", "Wedding celebration"],
-  ["Waseem-Saleem-home-main-gallery5-1-1-768x512.webp", "Wedding couple"],
-  ["compressed_MGL1402-1-768x512.jpg", "Bride portrait"],
-  ["MGL1402-1-scaled-2-768x512.jpg", "Wedding details"],
-  ["Edits-web-1-768x512.webp", "Wedding ceremony"],
-  ["Edits-web-768x512.webp", "Bride and groom"],
-  ["MGL2603-inta-web-low-1-768x512.webp", "Intimate wedding"],
-  ["MGL2654-Low-1-768x512.jpg", "Wedding portrait"],
-  ["MGL2690-Low-683x1024.jpg", "Bridal portrait"],
-  ["MGL2778-Low-683x1024.jpg", "Wedding couple portrait"],
-  ["MGL5376-instaa-1-683x1024.jpg", "Bridal details"],
-  ["MGL9249-FInal-PSD-768x512.jpg", "Wedding reception"],
-  ["MGL9813-1-768x512.jpg", "Cinematic wedding"],
-  ["MGL9816-2-web-768x512.webp", "Cinematic couple"],
-  ["MGL6561-JPG-1.jpg", "Wedding couple shoot"],
-  ["MGL0026-F-Recovered-scaled-1-683x1024.jpg", "Bride getting ready"],
-  ["MGL0032-F-scaled-1-683x1024.jpg", "Bridal makeup"],
-  ["MGL9434-683x1024.jpg", "Light and bright wedding"],
-  ["MGL9528-683x1024.jpg", "Bride portrait"],
-  ["MGL9535-683x1024.jpg", "Wedding details"],
-  ["MGL9543-683x1024.jpg", "Wedding couple"],
-  ["MGL9688-683x1024.jpg", "Wedding ceremony"],
-  ["MGL9886-Web-768x1152.jpg", "Wedding portrait"],
-  ["MGL9997-web-768x1152.jpg", "Wedding celebration"],
+  [
+    "Waseem-Saleem-light-and-bright-gallery6-768x768.webp",
+    "Wedding Photographer in Lahore",
+  ],
+  [
+    "DSC08333.JPG-insta-2-768x512.jpg",
+    "Pre-wedding photoshoot couple",
+  ],
+  [
+    "MGL2923-1-scaled-1-683x1024.jpg",
+    "Wedding Couple Candid",
+  ],
+  [
+    "IMG_1499-Insta-1-768x512.jpg",
+    "Female Photographer Wedding Shoot",
+  ],
+  [
+    "waseemsaleemphotography_2-741x1024.jpg",
+    "Wedding photography",
+  ],
+  [
+    "02-scaled-1-768x512.jpg",
+    "Outdoor Wedding Session",
+  ],
+  [
+    "Waseem-Saleem-light-and-bright-gallery8-768x768.webp",
+    "Bride and groom portrait",
+  ],
+  [
+    "Waseem-Saleem-light-and-bright-gallery11-768x768.webp",
+    "Wedding reception",
+  ],
+  [
+    "home-main-gallery6-2-768x512.webp",
+    "Candid wedding moment",
+  ],
+  [
+    "home-main-gallery6-768x512.webp",
+    "Wedding celebration",
+  ],
+  [
+    "Waseem-Saleem-home-main-gallery5-1-1-768x512.webp",
+    "Wedding couple",
+  ],
+  [
+    "compressed_MGL1402-1-768x512.jpg",
+    "Bride portrait",
+  ],
+  [
+    "MGL1402-1-scaled-2-768x512.jpg",
+    "Wedding details",
+  ],
+  [
+    "Edits-web-1-768x512.webp",
+    "Wedding ceremony",
+  ],
+  [
+    "Edits-web-768x512.webp",
+    "Bride and groom",
+  ],
+  [
+    "MGL2603-inta-web-low-1-768x512.webp",
+    "Intimate wedding",
+  ],
+  [
+    "MGL2654-Low-1-768x512.jpg",
+    "Wedding portrait",
+  ],
+  [
+    "MGL2690-Low-683x1024.jpg",
+    "Bridal portrait",
+  ],
+  [
+    "MGL2778-Low-683x1024.jpg",
+    "Wedding couple portrait",
+  ],
+  [
+    "MGL5376-instaa-1-683x1024.jpg",
+    "Bridal details",
+  ],
+  [
+    "MGL9249-FInal-PSD-768x512.jpg",
+    "Wedding reception",
+  ],
+  [
+    "MGL9813-1-768x512.jpg",
+    "Cinematic wedding",
+  ],
+  [
+    "MGL9816-2-web-768x512.webp",
+    "Cinematic couple",
+  ],
+  [
+    "MGL6561-JPG-1.jpg",
+    "Wedding couple shoot",
+  ],
+  [
+    "MGL0026-F-Recovered-scaled-1-683x1024.jpg",
+    "Bride getting ready",
+  ],
+  [
+    "MGL0032-F-scaled-1-683x1024.jpg",
+    "Bridal makeup",
+  ],
+  [
+    "MGL9434-683x1024.jpg",
+    "Light and bright wedding",
+  ],
+  [
+    "MGL9528-683x1024.jpg",
+    "Bride portrait",
+  ],
+  [
+    "MGL9535-683x1024.jpg",
+    "Wedding details",
+  ],
+  [
+    "MGL9543-683x1024.jpg",
+    "Wedding couple",
+  ],
+  [
+    "MGL9688-683x1024.jpg",
+    "Wedding ceremony",
+  ],
+  [
+    "MGL9886-Web-768x1152.jpg",
+    "Wedding portrait",
+  ],
+  [
+    "MGL9997-web-768x1152.jpg",
+    "Wedding celebration",
+  ],
 ];
+
+/* =========================================================
+   SERVICES
+   ========================================================= */
 
 const services = [
   {
     title: "WEDDING PHOTOGRAPHY",
     text: "This special day will remain etched in your memory for the rest of your life. Our wedding photography services make sure that all the emotions, smiles, and moments of your big day are captured in these unforgettable pictures.",
     image: "02-scaled-1-768x512.jpg",
-    linkText: "LEARN MORE ABOUT WEDDING PHOTOGRAPHY",
+    linkText:
+      "LEARN MORE ABOUT WEDDING PHOTOGRAPHY",
   },
   {
     title: "FEMALE PHOTOGRAPHER",
     text: "We are proud to offer the expertise and experience of a Female photographer, for brides or families who prefer intimate moments. She captures the special moments of your wedding with grace and elegance.",
     image: "compressed_MGL1402-1-768x512.jpg",
-    linkText: "LEARN MORE ABOUT FEMALE PHOTOGRAPHER",
+    linkText:
+      "LEARN MORE ABOUT FEMALE PHOTOGRAPHER",
   },
   {
     title: "PRE WEDDING",
     text: "Pre-wedding Photography and Post-wedding Photography will help you celebrate your love story after the wedding. We will make every moment special, whether it is your romantic engagement session or your joyous celebrations following your wedding.",
     image: "DSC08333.JPG-insta-2-768x512.jpg",
-    linkText: "LEARN MORE ABOUT PRE WEDDING",
+    linkText:
+      "LEARN MORE ABOUT PRE WEDDING",
   },
   {
     title: "BRIDAL SHOOT",
     text: "Every bride should shine brightly. Our wedding shoot is a timeless portrait that captures your elegance, grace and beauty. Each couple has a distinct style of theirs be it a gentle romantic, a daring modern one or traditional and she fashions the photo-taking approach to fit that.",
     image: "MGL2690-Low-683x1024.jpg",
-    linkText: "LEARN MORE ABOUT BRIDAL SHOOTS",
+    linkText:
+      "LEARN MORE ABOUT BRIDAL SHOOTS",
   },
   {
     title: "COUPLE SHOOT",
     text: "Celebrate your love with a Couple Shoot. Capture your bond, togetherness, and laughter. We can create pictures that capture your relationship in a beautiful way, whether it's romantic or fun.",
     image: "MGL2778-Low-683x1024.jpg",
-    linkText: "LEARN MORE ABOUT COUPLE SHOOTS",
+    linkText:
+      "LEARN MORE ABOUT COUPLE SHOOTS",
   },
   {
     title: "OUTDOOR SHOOT",
     text: "With our outdoor shooting service, nature becomes your backdrop. We capture stunning scenery in every frame, from historical landmarks to gardens.",
     image: "MGL9688-683x1024.jpg",
-    linkText: "LEARN MORE ABOUT OUTDOOR SHOOTS",
+    linkText:
+      "LEARN MORE ABOUT OUTDOOR SHOOTS",
   },
 ];
 
+/* =========================================================
+   FAQ
+   ========================================================= */
+
 const faqs = [
   {
-    question: "WHAT PHOTOGRAPHY SERVICES DO YOU OFFER?",
+    question:
+      "WHAT PHOTOGRAPHY SERVICES DO YOU OFFER?",
     answer:
       "We provide a wide range of photography services including weddings, couple shoots, corporate events, and destination photography. Every shoot is handled creatively to ensure timeless, high-quality images that truly capture your special moments.",
   },
   {
-    question: "DO YOU OFFER SERVICES OUTSIDE LAHORE?",
+    question:
+      "DO YOU OFFER SERVICES OUTSIDE LAHORE?",
     answer:
       "Yes, we offer photography and videography services across Pakistan, including Karachi, Islamabad, and international destination weddings.",
   },
   {
-    question: "DO YOU PROVIDE BOTH PHOTOGRAPHY AND VIDEOGRAPHY?",
+    question:
+      "DO YOU PROVIDE BOTH PHOTOGRAPHY AND VIDEOGRAPHY?",
     answer:
       "Yes, we provide complete photography and cinematic videography packages tailored to your event requirements.",
   },
   {
-    question: "WHY CHOOSE US FOR PHOTOGRAPHY?",
+    question:
+      "WHY CHOOSE US FOR PHOTOGRAPHY?",
     answer:
       "We focus on candid moments, high-end storytelling, professional lighting, and personalized service to make your memories unforgettable.",
   },
   {
-    question: "WHO IS THE BEST WEDDING PHOTOGRAPHER?",
+    question:
+      "WHO IS THE BEST WEDDING PHOTOGRAPHER?",
     answer:
       "Waseem Saleem Photography is recognized as one of the top wedding photography teams in Pakistan, known for timeless and elegant aesthetics.",
   },
 ];
+
+/* =========================================================
+   NAVIGATION MENUS
+   ========================================================= */
 
 const menus = {
   what: [
@@ -136,13 +273,19 @@ const menus = {
     "COUPLE SHOOT",
     "OUTDOOR SHOOT",
   ],
-  about: ["PACKAGES", "STORIES"],
+
+  about: [
+    "PACKAGES",
+    "STORIES",
+  ],
+
   location: [
     "WEDDING PHOTOGRAPHER IN LAHORE",
     "WEDDING PHOTOGRAPHER IN KARACHI",
     "WEDDING PHOTOGRAPHY IN ISLAMABAD",
     "DUBAI",
   ],
+
   gallery: [
     "CREATIVE",
     "LIGHT AND BRIGHT",
@@ -152,10 +295,17 @@ const menus = {
   ],
 };
 
-const menuHref = (label: string, item: string) =>
+const menuHref = (
+  label: string,
+  item: string
+) =>
   label === "LOCATION"
     ? `/location/${locationSlug(item)}`
     : "#services";
+
+/* =========================================================
+   DESKTOP MENU ITEM
+   ========================================================= */
 
 function MenuItem({
   label,
@@ -169,12 +319,16 @@ function MenuItem({
       <button
         type="button"
         className="menu-trigger flex items-center gap-1.5 hover:opacity-80 transition-opacity"
-        aria-haspopup={items ? "true" : undefined}
+        aria-haspopup={
+          items ? "true" : undefined
+        }
       >
         <span>{label}</span>
 
         {items && (
-          <FiChevronDown className="text-[11px] text-white/80 group-hover:rotate-180 transition-transform duration-200" />
+          <FiChevronDown
+            className="text-[11px] text-white/80 group-hover:rotate-180 transition-transform duration-200"
+          />
         )}
       </button>
 
@@ -195,44 +349,96 @@ function MenuItem({
   );
 }
 
+/* =========================================================
+   HOME
+   ========================================================= */
+
 export default function Home() {
-  const [scrolled, setScrolled] = useState(false);
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileMenuSection, setMobileMenuSection] = useState<string | null>(null);
+  const [scrolled, setScrolled] =
+    useState(false);
+
+  const [openIndex, setOpenIndex] =
+    useState<number | null>(0);
+
+  const [mobileMenuOpen, setMobileMenuOpen] =
+    useState(false);
+
+  const [mobileMenuSection, setMobileMenuSection] =
+    useState<string | null>(null);
+
+  /* =======================================================
+     HEADER SCROLL
+     ======================================================= */
 
   useEffect(() => {
-    const updateHeader = () => setScrolled(window.scrollY > 30);
+    const updateHeader = () => {
+      setScrolled(window.scrollY > 30);
+    };
+
     updateHeader();
-    window.addEventListener("scroll", updateHeader);
-    return () => window.removeEventListener("scroll", updateHeader);
+
+    window.addEventListener(
+      "scroll",
+      updateHeader,
+      { passive: true }
+    );
+
+    return () => {
+      window.removeEventListener(
+        "scroll",
+        updateHeader
+      );
+    };
   }, []);
 
+  /* =======================================================
+     LOCK BODY SCROLL WHEN MOBILE MENU IS OPEN
+     ======================================================= */
+
   useEffect(() => {
-    document.body.style.overflow = mobileMenuOpen ? "hidden" : "";
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
     return () => {
       document.body.style.overflow = "";
     };
   }, [mobileMenuOpen]);
 
+  /* =======================================================
+     GSAP
+     ======================================================= */
+
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    const removeHoverListeners: Array<() => void> = [];
+    const removeHoverListeners: Array<
+      () => void
+    > = [];
 
     const context = gsap.context(() => {
-      gsap.from(".hero-title, .hero-subtitle", {
-        x: -120,
-        opacity: 0,
-        duration: 1.2,
-        stagger: 0.14,
-        ease: "power4.out",
-        delay: 0.35,
-      });
+      /* Hero animation */
+
+      gsap.from(
+        ".hero-title, .hero-subtitle",
+        {
+          x: -120,
+          opacity: 0,
+          duration: 1.2,
+          stagger: 0.14,
+          ease: "power4.out",
+          delay: 0.35,
+        }
+      );
 
       gsap.fromTo(
         ".hero-gallery-btn",
-        { x: -80, opacity: 0 },
+        {
+          x: -80,
+          opacity: 0,
+        },
         {
           x: 0,
           opacity: 1,
@@ -242,20 +448,27 @@ export default function Home() {
         }
       );
 
+      /* Section reveal */
+
       gsap.utils
-        .toArray<HTMLElement>(".reveal-section")
+        .toArray<HTMLElement>(
+          ".reveal-section"
+        )
         .forEach((section) => {
           gsap.from(section, {
             y: 55,
             opacity: 0,
             duration: 0.9,
             ease: "power3.out",
+
             scrollTrigger: {
               trigger: section,
               start: "top 82%",
             },
           });
         });
+
+      /* Cards reveal */
 
       gsap.utils
         .toArray<HTMLElement>(
@@ -267,6 +480,7 @@ export default function Home() {
             opacity: 0,
             duration: 0.7,
             ease: "power2.out",
+
             scrollTrigger: {
               trigger: item,
               start: "top 90%",
@@ -274,14 +488,17 @@ export default function Home() {
           });
         });
 
+      /* Image hover */
+
       gsap.utils
         .toArray<HTMLElement>(
           ".gallery-masonry-item, .service-img-wrapper, .styles article, .story img"
         )
         .forEach((item) => {
-          const imageElement = item.matches("img")
-            ? item
-            : item.querySelector("img");
+          const imageElement =
+            item.matches("img")
+              ? item
+              : item.querySelector("img");
 
           if (!imageElement) return;
 
@@ -315,30 +532,50 @@ export default function Home() {
             });
           };
 
-          item.addEventListener("mouseenter", enter);
-          item.addEventListener("mouseleave", leave);
+          item.addEventListener(
+            "mouseenter",
+            enter
+          );
+
+          item.addEventListener(
+            "mouseleave",
+            leave
+          );
 
           removeHoverListeners.push(() => {
-            item.removeEventListener("mouseenter", enter);
-            item.removeEventListener("mouseleave", leave);
+            item.removeEventListener(
+              "mouseenter",
+              enter
+            );
+
+            item.removeEventListener(
+              "mouseleave",
+              leave
+            );
           });
         });
     });
 
     return () => {
-      removeHoverListeners.forEach((removeListener) =>
-        removeListener()
+      removeHoverListeners.forEach(
+        (removeListener) =>
+          removeListener()
       );
 
       context.revert();
     };
   }, []);
 
+  /* =======================================================
+     IMAGE ZOOM
+     ======================================================= */
+
   const zoomImage = (
     event: MouseEvent<HTMLElement>,
     scale: number
   ) => {
-    const target = event.currentTarget.querySelector("img");
+    const target =
+      event.currentTarget.querySelector("img");
 
     if (target) {
       gsap.to(target, {
@@ -349,13 +586,36 @@ export default function Home() {
     }
   };
 
+  /* =======================================================
+     FAQ
+     ======================================================= */
+
   const toggleFaq = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+    setOpenIndex(
+      openIndex === index ? null : index
+    );
   };
+
+  /* =======================================================
+     CLOSE MOBILE MENU
+     ======================================================= */
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+    setMobileMenuSection(null);
+  };
+
+  /* =======================================================
+     RENDER
+     ======================================================= */
 
   return (
     <main className="relative min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans">
-      {/* Landing Section */}
+
+      {/* =====================================================
+          LANDING SECTION
+      ===================================================== */}
+
       <section
         className="landing-hero relative min-h-screen w-full overflow-hidden bg-cover bg-center bg-no-repeat flex flex-col justify-between"
         style={{
@@ -364,6 +624,9 @@ export default function Home() {
           )})`,
         }}
       >
+
+        {/* Background video */}
+
         <video
           className="absolute inset-0 z-0 h-full w-full object-cover"
           autoPlay
@@ -379,44 +642,78 @@ export default function Home() {
           />
         </video>
 
+        {/* Dark overlay */}
+
         <div
           className="absolute inset-0 z-0 bg-black/35"
           aria-hidden="true"
         />
 
-        {/* Fixed Header */}
+        {/* =================================================
+            FIXED HEADER
+        ================================================= */}
+
         <header className="site-header">
+
+          {/* TOPBAR */}
+
           <div className="topbar hidden xl:flex">
+
             <div className="socials">
-              <a href="#" aria-label="Facebook">
+
+              <a
+                href="#"
+                aria-label="Facebook"
+              >
                 <FaFacebookF />
               </a>
 
-              <a href="#" aria-label="YouTube">
+              <a
+                href="#"
+                aria-label="YouTube"
+              >
                 <FaYoutube />
               </a>
 
-              <a href="#" aria-label="Instagram">
+              <a
+                href="#"
+                aria-label="Instagram"
+              >
                 <FaInstagram />
               </a>
+
             </div>
 
             <div className="topbar-contact">
-              <a href="mailto:waseemsaleemphotography@gmail.com">
+
+              <a
+                href="mailto:waseemsaleemphotography@gmail.com"
+              >
                 <FaEnvelope className="text-[11px]" />
+
                 <span>
                   WASEEMSALEEMPHOTOGRAPHY@GMAIL.COM
                 </span>
               </a>
 
-              <a href="tel:+923048055553">
+              <a
+                href="tel:+923048055553"
+              >
                 <FaPhoneAlt className="text-[11px]" />
-                <span>+92 304 8055553</span>
+
+                <span>
+                  +92 304 8055553
+                </span>
               </a>
+
             </div>
+
           </div>
 
-          {/* Desktop & Mobile Navigation Bar */}
+          {/* =================================================
+              MAIN NAVBAR
+          ================================================= */}
+
           <nav
             className={`home-nav ${
               scrolled
@@ -424,9 +721,15 @@ export default function Home() {
                 : "bg-gradient-to-b from-black/80 to-transparent"
             }`}
           >
-            {/* Desktop Navigation Left */}
+
+            {/* DESKTOP LEFT */}
+
             <div className="home-links left hidden xl:flex">
-              <a className="active" href="#">
+
+              <a
+                className="active"
+                href="#"
+              >
                 HOME
               </a>
 
@@ -439,18 +742,26 @@ export default function Home() {
                 label="ABOUT"
                 items={menus.about}
               />
+
             </div>
 
-            {/* Centered Logo */}
-            <a href="#" className="logo-link">
+            {/* CENTER LOGO */}
+
+            <a
+              href="#"
+              className="logo-link"
+              aria-label="Waseem Saleem Photography Home"
+            >
               <img
                 src={image("logo.webp")}
                 alt="Waseem Saleem Photography"
               />
             </a>
 
-            {/* Desktop Navigation Right */}
+            {/* DESKTOP RIGHT */}
+
             <div className="home-links right hidden xl:flex">
+
               <MenuItem
                 label="LOCATION"
                 items={menus.location}
@@ -467,9 +778,13 @@ export default function Home() {
               >
                 CONTACT
               </a>
+
             </div>
 
-            {/* Mobile Hamburger Button */}
+            {/* =================================================
+                MOBILE HAMBURGER
+            ================================================= */}
+
             <button
               type="button"
               aria-label={
@@ -477,112 +792,191 @@ export default function Home() {
                   ? "Close menu"
                   : "Open menu"
               }
-              aria-expanded={mobileMenuOpen}
+              aria-expanded={
+                mobileMenuOpen
+              }
               aria-controls="mobile-navigation"
               onClick={() => {
-                setMobileMenuOpen((open) => !open);
+                if (mobileMenuOpen) {
+                  closeMobileMenu();
+                } else {
+                  setMobileMenuOpen(true);
+                }
               }}
-              className={`mobile-menu-button xl:hidden ${
-                mobileMenuOpen ? "is-open" : ""
+              className={`mobile-menu-button ${
+                mobileMenuOpen
+                  ? "is-open"
+                  : ""
               }`}
             >
               <span />
               <span />
               <span />
             </button>
+
           </nav>
 
-          {/* Mobile Full-Width Dropdown Navigation Menu */}
+          {/* =================================================
+              MOBILE NAVIGATION
+              IMPORTANT:
+              This is outside <nav> to avoid stacking issues.
+          ================================================= */}
+
           {mobileMenuOpen && (
             <div
               id="mobile-navigation"
-              className="mobile-menu xl:hidden"
+              className="mobile-menu"
+              role="navigation"
+              aria-label="Mobile navigation"
             >
+
+              {/* HOME */}
+
               <a
                 href="#"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={
+                  closeMobileMenu
+                }
               >
                 HOME
               </a>
 
-              {Object.entries(menus).map(([key, items]) => {
-                const sectionLabels: Record<string, string> = {
-                  what: "WHAT WE DO",
-                  about: "ABOUT",
-                  location: "LOCATION",
-                  gallery: "GALLERY",
-                };
+              {/* MENU GROUPS */}
 
-                const displayLabel = sectionLabels[key] || key.toUpperCase();
-                const isOpen = mobileMenuSection === key;
+              {Object.entries(
+                menus
+              ).map(
+                ([key, items]) => {
 
-                return (
-                  <div className="mobile-menu-group" key={key}>
-                    <button
-                      type="button"
-                      className="mobile-menu-trigger"
-                      aria-expanded={isOpen}
-                      aria-controls={`mobile-submenu-${key}`}
-                      onClick={() =>
-                        setMobileMenuSection(isOpen ? null : key)
-                      }
+                  const sectionLabels: Record<
+                    string,
+                    string
+                  > = {
+                    what: "WHAT WE DO",
+                    about: "ABOUT",
+                    location: "LOCATION",
+                    gallery: "GALLERY",
+                  };
+
+                  const displayLabel =
+                    sectionLabels[key] ||
+                    key.toUpperCase();
+
+                  const isOpen =
+                    mobileMenuSection ===
+                    key;
+
+                  return (
+                    <div
+                      className="mobile-menu-group"
+                      key={key}
                     >
-                      <span>{displayLabel}</span>
-                      <FiChevronDown
-                        className={`transition-transform duration-200 ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                        aria-hidden="true"
-                      />
-                    </button>
 
-                    {isOpen && (
-                      <div
-                        className="mobile-submenu"
-                        id={`mobile-submenu-${key}`}
+                      {/* GROUP BUTTON */}
+
+                      <button
+                        type="button"
+                        className="mobile-menu-trigger"
+                        aria-expanded={
+                          isOpen
+                        }
+                        aria-controls={`mobile-submenu-${key}`}
+                        onClick={() => {
+                          setMobileMenuSection(
+                            isOpen
+                              ? null
+                              : key
+                          );
+                        }}
                       >
-                        {items.map((item) => (
-                          <a
-                            href={menuHref(displayLabel, item)}
-                            key={item}
-                            onClick={() => {
-                              setMobileMenuOpen(false);
-                              setMobileMenuSection(null);
-                            }}
-                          >
-                            {item}
-                          </a>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+
+                        <span>
+                          {displayLabel}
+                        </span>
+
+                        <FiChevronDown
+                          className={`transition-transform duration-200 ${
+                            isOpen
+                              ? "rotate-180"
+                              : ""
+                          }`}
+                          aria-hidden="true"
+                        />
+
+                      </button>
+
+                      {/* SUBMENU */}
+
+                      {isOpen && (
+                        <div
+                          className="mobile-submenu"
+                          id={`mobile-submenu-${key}`}
+                        >
+
+                          {items.map(
+                            (item) => (
+                              <a
+                                href={menuHref(
+                                  displayLabel,
+                                  item
+                                )}
+                                key={item}
+                                onClick={
+                                  closeMobileMenu
+                                }
+                              >
+                                {item}
+                              </a>
+                            )
+                          )}
+
+                        </div>
+                      )}
+
+                    </div>
+                  );
+                }
+              )}
+
+              {/* CONTACT */}
 
               <a
                 href="/contact"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={
+                  closeMobileMenu
+                }
               >
                 CONTACT
               </a>
+
             </div>
           )}
+
         </header>
 
-        {/* Hero Section */}
+        {/* =================================================
+            HERO CONTENT
+        ================================================= */}
+
         <div className="hero-content-wrapper z-10">
+
           <div className="hero-copy">
+
             <h1 className="hero-title">
-              WEDDING <br />
-              PHOTOGRAPHER <br />
-              TIMELESS, CINEMATIC <br />
+              WEDDING
+              <br />
+              PHOTOGRAPHER
+              <br />
+              TIMELESS, CINEMATIC
+              <br />
               STORYTELLING
             </h1>
 
             <p className="hero-subtitle">
-              Waseem Saleem Photography offers cinematic
-              &amp; timeless wedding photography, capturing
-              love, joy, and memories with creative elegance
+              Waseem Saleem Photography offers
+              cinematic &amp; timeless wedding
+              photography, capturing love, joy,
+              and memories with creative elegance
               and storytelling.
             </p>
 
@@ -592,107 +986,148 @@ export default function Home() {
             >
               SEE OUR WEDDING GALLERY
             </a>
+
           </div>
+
         </div>
+
       </section>
 
-      {/* Photo Gallery */}
+      {/* =====================================================
+          PHOTO GALLERY
+      ===================================================== */}
+
       <section
         className="gallery-intro reveal-section py-20 px-6 max-w-[1400px] mx-auto text-center"
         id="gallery"
       >
+
         <h2 className="text-3xl font-serif tracking-widest mb-4 uppercase">
           PHOTO GALLERY
         </h2>
 
         <p className="text-sm text-gray-400 max-w-3xl mx-auto mb-2 leading-relaxed">
-          Your wedding day will always be one that you remember
-          with immense fondness, and the best wedding photography
-          in Lahore is offered by us to make sure you immortalize
-          that special day in the best way possible. As some of
-          the best wedding photographers in Lahore, we take care
-          to make sure all your smiles, gazes, and emotions are
-          captured through cinematography.
+          Your wedding day will always be one
+          that you remember with immense
+          fondness, and the best wedding
+          photography in Lahore is offered by us
+          to make sure you immortalize that
+          special day in the best way possible.
+          As some of the best wedding
+          photographers in Lahore, we take care
+          to make sure all your smiles, gazes,
+          and emotions are captured through
+          cinematography.
         </p>
 
         <p className="text-sm font-semibold text-white mb-12">
-          Get the best wedding photography experience from us.
+          Get the best wedding photography
+          experience from us.
         </p>
 
         <div className="gallery-masonry">
-          {gallery.map(([src, alt]) => (
-            <div
-              key={src}
-              className="gallery-masonry-item"
-              onMouseEnter={(event) =>
-                zoomImage(event, 1.07)
-              }
-              onMouseLeave={(event) =>
-                zoomImage(event, 1)
-              }
-            >
-              <img
-                src={image(src)}
-                alt={alt}
-                loading="eager"
-              />
-            </div>
-          ))}
+
+          {gallery.map(
+            ([src, alt]) => (
+              <div
+                key={src}
+                className="gallery-masonry-item"
+                onMouseEnter={(event) =>
+                  zoomImage(event, 1.07)
+                }
+                onMouseLeave={(event) =>
+                  zoomImage(event, 1)
+                }
+              >
+                <img
+                  src={image(src)}
+                  alt={alt}
+                  loading="eager"
+                />
+              </div>
+            )
+          )}
+
         </div>
+
       </section>
 
-      {/* Services Section */}
+      {/* =====================================================
+          SERVICES
+      ===================================================== */}
+
       <section
         className="services-home reveal-section bg-white text-black py-20 px-6"
         id="services"
       >
+
         <div className="services-container max-w-[1300px] mx-auto text-center">
+
           <h2 className="text-3xl font-serif tracking-widest mb-14 text-black uppercase">
             OUR SERVICES
           </h2>
 
           <div className="service-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {services.map((item) => (
-              <article
-                key={item.title}
-                className="service-card flex flex-col items-center text-center bg-white"
-              >
-                <div className="service-img-wrapper w-full h-[280px] overflow-hidden mb-6">
-                  <img
-                    src={image(item.image)}
-                    alt={item.title}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
 
-                <div className="service-content flex flex-col items-center flex-grow w-full px-2">
-                  <h3 className="font-serif text-2xl tracking-wide text-black mb-4 uppercase max-w-[260px] leading-snug">
-                    {item.title}
-                  </h3>
+            {services.map(
+              (item) => (
+                <article
+                  key={item.title}
+                  className="service-card flex flex-col items-center text-center bg-white"
+                >
 
-                  <p className="text-xs md:text-sm text-gray-600 leading-relaxed mb-8 max-w-[360px]">
-                    {item.text}
-                  </p>
+                  <div className="service-img-wrapper w-full h-[280px] overflow-hidden mb-6">
 
-                  <a
-                    href="#contact"
-                    className="service-btn mt-auto bg-black text-white text-[10px] font-bold tracking-widest px-6 py-3.5 uppercase hover:bg-neutral-800 transition-colors inline-block"
-                  >
-                    {item.linkText}
-                  </a>
-                </div>
-              </article>
-            ))}
+                    <img
+                      src={image(
+                        item.image
+                      )}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                    />
+
+                  </div>
+
+                  <div className="service-content flex flex-col items-center flex-grow w-full px-2">
+
+                    <h3 className="font-serif text-2xl tracking-wide text-black mb-4 uppercase max-w-[260px] leading-snug">
+                      {item.title}
+                    </h3>
+
+                    <p className="text-xs md:text-sm text-gray-600 leading-relaxed mb-8 max-w-[360px]">
+                      {item.text}
+                    </p>
+
+                    <a
+                      href="#contact"
+                      className="service-btn mt-auto bg-black text-white text-[10px] font-bold tracking-widest px-6 py-3.5 uppercase hover:bg-neutral-800 transition-colors inline-block"
+                    >
+                      {item.linkText}
+                    </a>
+
+                  </div>
+
+                </article>
+              )
+            )}
+
           </div>
+
         </div>
+
       </section>
 
-      {/* Story Section */}
+      {/* =====================================================
+          STORY
+      ===================================================== */}
+
       <section
         className="story reveal-section py-20 px-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
         id="about"
       >
+
         <div>
+
           <h2 className="text-2xl md:text-4xl font-light tracking-widest leading-snug mb-6">
             EVERY MOMENT DESERVES
             <br />
@@ -700,10 +1135,12 @@ export default function Home() {
           </h2>
 
           <p className="text-sm text-gray-400 leading-relaxed mb-8">
-            Your love story is made of the little glances,
-            loud laughter, and beautiful chaos you never want
-            to forget. We turn those honest moments into
-            timeless photographs you can relive for generations.
+            Your love story is made of the
+            little glances, loud laughter, and
+            beautiful chaos you never want to
+            forget. We turn those honest moments
+            into timeless photographs you can
+            relive for generations.
           </p>
 
           <a
@@ -712,9 +1149,11 @@ export default function Home() {
           >
             LET YOUR MOMENT BLOOM FOREVER
           </a>
+
         </div>
 
         <div>
+
           <img
             src={image(
               "Waseem-Saleem-home-story-768x997.webp"
@@ -722,18 +1161,27 @@ export default function Home() {
             alt="Wedding photography story"
             className="w-full h-auto object-cover"
           />
+
         </div>
+
       </section>
 
-      {/* Styles Section */}
+      {/* =====================================================
+          STYLES
+      ===================================================== */}
+
       <section className="styles reveal-section py-20 px-6 bg-zinc-950">
+
         <div className="max-w-7xl mx-auto text-center">
+
           <h2 className="text-2xl md:text-3xl font-light tracking-widest mb-12">
             WEDDING PHOTOGRAPHY STYLE
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+
             <article>
+
               <img
                 src={image(
                   "MGL9816-2-web-768x512.webp"
@@ -741,23 +1189,31 @@ export default function Home() {
                 alt="Cinematic"
                 className="w-full h-72 object-cover mb-4"
               />
+
               <h3 className="text-sm tracking-widest font-medium">
                 CINEMATIC
               </h3>
+
             </article>
 
             <article>
+
               <img
-                src={image("MGL9434-683x1024.jpg")}
+                src={image(
+                  "MGL9434-683x1024.jpg"
+                )}
                 alt="Light and bright"
                 className="w-full h-72 object-cover mb-4"
               />
+
               <h3 className="text-sm tracking-widest font-medium">
                 LIGHT &amp; BRIGHT
               </h3>
+
             </article>
 
             <article>
+
               <img
                 src={image(
                   "MGL0576-F-F-min-1536x1024-2-768x512.webp"
@@ -765,21 +1221,32 @@ export default function Home() {
                 alt="Dark and dramatic"
                 className="w-full h-72 object-cover mb-4"
               />
+
               <h3 className="text-sm tracking-widest font-medium">
                 DARK &amp; DRAMATIC
               </h3>
+
             </article>
+
           </div>
+
         </div>
+
       </section>
 
-      {/* FAQ Section */}
+      {/* =====================================================
+          FAQ
+      ===================================================== */}
+
       <section
         className="faq-section reveal-section bg-[#f8f8f8] text-black py-28 px-8 md:px-16"
         id="faq"
       >
+
         <div className="faq-container max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-[1fr_1.8fr] gap-16 lg:gap-24 items-start">
+
           <div className="faq-left">
+
             <h2 className="font-serif text-5xl md:text-6xl xl:text-[68px] leading-[1.08] mb-10 text-black uppercase tracking-wide font-normal">
               FREQUENTLY
               <br />
@@ -794,57 +1261,87 @@ export default function Home() {
             >
               CONTACT US
             </a>
+
           </div>
 
           <div className="faq-right flex flex-col gap-5">
-            {faqs.map((faq, index) => {
-              const isOpen = openIndex === index;
 
-              return (
-                <div
-                  key={index}
-                  className={`faq-item transition-all duration-300 ${
-                    isOpen
-                      ? "bg-white p-8 md:p-10 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.06)]"
-                      : "border-b border-gray-300/80 py-6 px-2"
-                  }`}
-                >
-                  <button
-                    className="faq-question w-full flex justify-between items-center text-left text-base md:text-[17px] font-normal tracking-[0.06em] text-gray-900 uppercase cursor-pointer"
-                    onClick={() => toggleFaq(index)}
+            {faqs.map(
+              (faq, index) => {
+
+                const isOpen =
+                  openIndex === index;
+
+                return (
+                  <div
+                    key={index}
+                    className={`faq-item transition-all duration-300 ${
+                      isOpen
+                        ? "bg-white p-8 md:p-10 rounded-sm shadow-[0_15px_40px_rgba(0,0,0,0.06)]"
+                        : "border-b border-gray-300/80 py-6 px-2"
+                    }`}
                   >
-                    <span className="pr-4">
-                      {faq.question}
-                    </span>
 
-                    <span className="faq-icon-circle w-9 h-9 rounded-full border border-black flex items-center justify-center flex-shrink-0 transition-transform duration-200">
-                      {isOpen ? (
-                        <FiMinus className="text-base" />
-                      ) : (
-                        <FiPlus className="text-base" />
-                      )}
-                    </span>
-                  </button>
+                    <button
+                      type="button"
+                      className="faq-question w-full flex justify-between items-center text-left text-base md:text-[17px] font-normal tracking-[0.06em] text-gray-900 uppercase cursor-pointer"
+                      onClick={() =>
+                        toggleFaq(index)
+                      }
+                    >
 
-                  {isOpen && (
-                    <div className="faq-answer mt-6 text-sm md:text-base text-gray-600 leading-[1.8] font-light max-w-[720px]">
-                      <p>{faq.answer}</p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                      <span className="pr-4">
+                        {faq.question}
+                      </span>
+
+                      <span className="faq-icon-circle w-9 h-9 rounded-full border border-black flex items-center justify-center flex-shrink-0 transition-transform duration-200">
+
+                        {isOpen ? (
+                          <FiMinus className="text-base" />
+                        ) : (
+                          <FiPlus className="text-base" />
+                        )}
+
+                      </span>
+
+                    </button>
+
+                    {isOpen && (
+                      <div className="faq-answer mt-6 text-sm md:text-base text-gray-600 leading-[1.8] font-light max-w-[720px]">
+
+                        <p>
+                          {faq.answer}
+                        </p>
+
+                      </div>
+                    )}
+
+                  </div>
+                );
+              }
+            )}
+
           </div>
+
         </div>
+
       </section>
 
-      {/* Site Footer */}
+      {/* =====================================================
+          FOOTER
+      ===================================================== */}
+
       <footer
         className="site-footer reveal-section bg-black text-white pt-24 pb-12 px-8 border-t border-white/10"
         id="contact"
       >
+
         <div className="footer-container max-w-[1350px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center mb-20 items-start">
+
+          {/* FOOTER COLUMN 1 */}
+
           <div className="footer-col flex flex-col items-center">
+
             <img
               src="/images/logo.webp"
               alt="Waseem Saleem Photography"
@@ -856,6 +1353,7 @@ export default function Home() {
             </h3>
 
             <div className="footer-socials flex justify-center gap-5">
+
               <a
                 href="#"
                 aria-label="Facebook"
@@ -879,21 +1377,28 @@ export default function Home() {
               >
                 <FaYoutube />
               </a>
+
             </div>
+
           </div>
 
+          {/* FOOTER COLUMN 2 */}
+
           <div className="footer-col flex flex-col items-center">
+
             <h2 className="font-serif text-2xl md:text-3xl tracking-[0.18em] mb-8 uppercase text-white font-normal">
               CONTACT
             </h2>
 
             <p className="text-base text-gray-200 mb-4 tracking-wide font-light">
+
               <a
                 href="mailto:waseemsaleemphotography@gmail.com"
                 className="hover:underline"
               >
                 waseemsaleemphotography@gmail.com
               </a>
+
             </p>
 
             <p className="text-base text-gray-200 mb-2 tracking-wide font-light">
@@ -903,16 +1408,20 @@ export default function Home() {
             <p className="text-base text-gray-200 tracking-wide font-light">
               +92 304-805 5553
             </p>
+
           </div>
 
+          {/* FOOTER COLUMN 3 */}
+
           <div className="footer-col flex flex-col items-center">
+
             <h2 className="font-serif text-2xl md:text-3xl tracking-[0.18em] mb-8 uppercase text-white font-normal">
               LOCATIONS
             </h2>
 
             <p className="text-base text-gray-200 max-w-[320px] leading-relaxed mb-6 font-light">
-              We providing the best photography services
-              in Major Areas.
+              We providing the best photography
+              services in Major Areas.
             </p>
 
             <p className="text-base text-gray-200 mb-2 tracking-wide font-light">
@@ -922,26 +1431,37 @@ export default function Home() {
             <p className="text-base text-gray-200 tracking-wide font-light">
               Karachi
             </p>
+
           </div>
+
         </div>
 
+        {/* FOOTER BOTTOM */}
+
         <div className="footer-bottom max-w-[1350px] mx-auto text-center flex flex-col items-center gap-3 pt-10 border-t border-white/10 text-sm md:text-base text-gray-300 tracking-wide font-light">
+
           <p>
             Copyright © 2026 – Waseem Saleem Photography |
             Terms &amp; Conditions | Privacy Policy
           </p>
 
           <p className="text-gray-300">
+
             Designed By{" "}
+
             <a
               href="#"
               className="text-white underline hover:text-gray-200 font-normal"
             >
-              Sufyan Malik
+              Ifra Fatima
             </a>
+
           </p>
+
         </div>
+
       </footer>
+
     </main>
   );
 }
