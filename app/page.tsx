@@ -79,10 +79,6 @@ const gallery = [
     "Wedding couple",
   ],
   [
-    "compressed_MGL1402-1-768x512.jpg",
-    "Bride portrait",
-  ],
-  [
     "MGL1402-1-scaled-2-768x512.jpg",
     "Wedding details",
   ],
