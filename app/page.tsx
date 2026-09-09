@@ -1950,7 +1950,7 @@ gsap.utils
               href="#"
               className="text-white underline hover:text-gray-200 font-normal"
             >
-              Ifra Fatima
+              BeginTech
             </a>
 
           </p>
