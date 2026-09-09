@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import {
   FaFacebookF,
@@ -353,6 +353,10 @@ function MenuItem({
    ========================================================= */
 
 export default function Home() {
+  const gallerySectionRef = useRef<HTMLDivElement>(null);
+  const galleryStickyRef = useRef<HTMLDivElement>(null);
+  const galleryViewportRef = useRef<HTMLDivElement>(null);
+  const galleryTrackRef = useRef<HTMLDivElement>(null);
   const [scrolled, setScrolled] =
     useState(false);
 
@@ -496,131 +500,71 @@ export default function Home() {
          track horizontally; distance is measured dynamically.
          --------------------------------------------------- */
 
-      const bindGalleryHorizontalScroll = (
-        scrub: number
-      ) => {
-        const section = document.querySelector<HTMLElement>(
-          ".gallery-horizontal"
-        );
-        const track = document.querySelector<HTMLElement>(
-          ".gallery-horizontal-track"
-        );
-        const viewport = document.querySelector<HTMLElement>(
-          ".gallery-horizontal-viewport"
-        );
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const section = gallerySectionRef.current;
+        const sticky = galleryStickyRef.current;
+        const viewport = galleryViewportRef.current;
+        const track = galleryTrackRef.current;
 
-        if (!section || !track || !viewport) return;
+        if (!section || !sticky || !viewport || !track) return;
 
         const getDistance = () =>
-          Math.max(
-            0,
-            track.scrollWidth - viewport.clientWidth
-          );
+          Math.max(0, track.scrollWidth - viewport.clientWidth);
 
-        const timeline = gsap.timeline({
+        const galleryTween = gsap.to(track, {
+          x: () => -getDistance(),
+          ease: "none",
           scrollTrigger: {
             trigger: section,
             start: "top top",
             end: () => `+=${getDistance()}`,
-            pin: ".gallery-horizontal-pin",
-            scrub,
+            pin: sticky,
+            scrub: 1,
             invalidateOnRefresh: true,
             anticipatePin: 1,
           },
         });
 
-        timeline.to(
-          track,
-          {
-            x: () => -getDistance(),
-            ease: "none",
-          },
-          0
-        );
+        let refreshFrame: number | null = null;
+        const refreshGallery = () => {
+          if (refreshFrame !== null) return;
 
-        gsap.utils
-          .toArray<HTMLElement>(
-            ".gallery-horizontal-item"
-          )
-          .forEach((item, index) => {
-            const img = item.querySelector("img");
-            if (!img) return;
+          refreshFrame = window.requestAnimationFrame(() => {
+            refreshFrame = null;
+            ScrollTrigger.refresh();
+          });
+        };
 
-            const depth =
-              index % 3 === 0
-                ? 1.028
-                : index % 3 === 1
-                  ? 1.02
-                  : 1.024;
-            const shift =
-              index % 2 === 0 ? -6 : 6;
+        const resizeObserver = new ResizeObserver(refreshGallery);
+        resizeObserver.observe(viewport);
+        resizeObserver.observe(track);
 
-            timeline.fromTo(
-              img,
-              {
-                scale: depth,
-                x: shift,
-                transformOrigin: "center center",
-              },
-              {
-                scale: 1,
-                x: 0,
-                ease: "none",
-              },
-              0
-            );
+        track
+          .querySelectorAll<HTMLImageElement>("img")
+          .forEach((img) => {
+            if (!img.complete) {
+              img.addEventListener("load", refreshGallery, { once: true });
+              img.addEventListener("error", refreshGallery, { once: true });
+            }
           });
 
-        const images =
-          track.querySelectorAll<HTMLImageElement>(
-            "img"
-          );
+        refreshGallery();
 
-        void Promise.all(
-          Array.from(images).map(
-            (img) =>
-              new Promise<void>((resolve) => {
-                if (img.complete) {
-                  resolve();
-                  return;
-                }
-
-                img.addEventListener(
-                  "load",
-                  () => resolve(),
-                  { once: true }
-                );
-
-                img.addEventListener(
-                  "error",
-                  () => resolve(),
-                  { once: true }
-                );
-              })
-          )
-        ).then(() => {
-          ScrollTrigger.refresh();
-        });
-      };
-
-      mm.add(
-        "(prefers-reduced-motion: no-preference)",
-        () => {
-          mm.add("(min-width: 768px)", () => {
-            bindGalleryHorizontalScroll(1);
-          });
-
-          mm.add("(max-width: 767px)", () => {
-            bindGalleryHorizontalScroll(0.75);
-          });
-        }
-      );
+        return () => {
+          if (refreshFrame !== null) {
+            window.cancelAnimationFrame(refreshFrame);
+          }
+          resizeObserver.disconnect();
+          galleryTween.scrollTrigger?.kill();
+          galleryTween.kill();
+        };
+      });
 
       /* Image hover */
 
       gsap.utils
         .toArray<HTMLElement>(
-          ".gallery-horizontal-item, .service-img-wrapper, .styles article, .story img"
+          ".gallery-item, .service-img-wrapper, .styles article, .story img"
         )
         .forEach((item) => {
           const imageElement =
@@ -1135,19 +1079,31 @@ export default function Home() {
           experience from us.
         </p>
 
-        <div className="gallery-horizontal">
+        <div
+          className="gallery-section"
+          ref={gallerySectionRef}
+        >
 
-          <div className="gallery-horizontal-pin">
+          <div
+            className="gallery-sticky"
+            ref={galleryStickyRef}
+          >
 
-            <div className="gallery-horizontal-viewport">
+            <div
+              className="gallery-viewport"
+              ref={galleryViewportRef}
+            >
 
-              <div className="gallery-horizontal-track">
+              <div
+                className="gallery-track"
+                ref={galleryTrackRef}
+              >
 
                 {gallery.map(
                   ([src, alt]) => (
                     <div
                       key={src}
-                      className="gallery-horizontal-item"
+                      className="gallery-item"
                     >
                       <img
                         src={image(src)}
