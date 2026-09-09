@@ -24,13 +24,11 @@ import {
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-
 /* =========================================================
    IMAGE HELPER
 ========================================================= */
 
 const image = (name: string) => `/images/${name}`;
-
 
 /* =========================================================
    LOCATION SLUG
@@ -50,7 +48,6 @@ const locationSlug = (label: string) => {
       .replace(/\s+/g, "-")
   );
 };
-
 
 /* =========================================================
    GALLERY
@@ -179,7 +176,6 @@ const gallery = [
   ],
 ];
 
-
 /* =========================================================
    SERVICES
 ========================================================= */
@@ -229,7 +225,6 @@ const services = [
   },
 ];
 
-
 /* =========================================================
    FAQ
 ========================================================= */
@@ -267,7 +262,6 @@ const faqs = [
   },
 ];
 
-
 /* =========================================================
    NAVIGATION MENUS
 ========================================================= */
@@ -304,7 +298,6 @@ const menus = {
   ],
 };
 
-
 /* =========================================================
    MENU HREF
 ========================================================= */
@@ -316,7 +309,6 @@ const menuHref = (
   label === "LOCATION"
     ? `/location/${locationSlug(item)}`
     : "#services";
-
 
 /* =========================================================
    DESKTOP MENU ITEM
@@ -348,7 +340,6 @@ function MenuItem({
         )}
       </button>
 
-
       {items && (
         <div className="dropdown absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:flex group-focus-within:flex flex-col bg-black/95 border border-white/10 min-w-[220px] py-3 z-50 shadow-2xl">
 
@@ -372,7 +363,6 @@ function MenuItem({
   );
 }
 
-
 /* =========================================================
    HOME
 ========================================================= */
@@ -391,7 +381,6 @@ export default function Home() {
   const galleryTrackRef =
     useRef<HTMLDivElement>(null);
 
-
   const [scrolled, setScrolled] =
     useState(false);
 
@@ -403,7 +392,6 @@ export default function Home() {
 
   const [mobileMenuSection, setMobileMenuSection] =
     useState<string | null>(null);
-
 
   /* =======================================================
      HEADER SCROLL
@@ -417,9 +405,7 @@ export default function Home() {
       );
     };
 
-
     updateHeader();
-
 
     window.addEventListener(
       "scroll",
@@ -428,7 +414,6 @@ export default function Home() {
         passive: true,
       }
     );
-
 
     return () => {
 
@@ -440,7 +425,6 @@ export default function Home() {
     };
 
   }, []);
-
 
   /* =======================================================
      LOCK BODY SCROLL WHEN MOBILE MENU IS OPEN
@@ -456,14 +440,12 @@ export default function Home() {
         "";
     }
 
-
     return () => {
       document.body.style.overflow =
         "";
     };
 
   }, [mobileMenuOpen]);
-
 
   /* =======================================================
      GSAP + SCROLLTRIGGER
@@ -475,461 +457,422 @@ export default function Home() {
       ScrollTrigger
     );
 
-
     const removeHoverListeners: Array<
       () => void
     > = [];
 
+    /*
+     * IMPORTANT:
+     * cleanupGallery is declared OUTSIDE
+     * the gsap.context callback.
+     *
+     * This prevents:
+     * "Cannot access 'r' before initialization"
+     */
 
-    const context =
-      gsap.context(() => {
+    let cleanupGallery:
+      (() => void) | null = null;
 
+    const context = gsap.context(() => {
 
-        /* =================================================
-           HERO ANIMATION
-        ================================================= */
+      /* =================================================
+         HERO ANIMATION
+      ================================================= */
 
-        gsap.from(
-          ".hero-title, .hero-subtitle",
-          {
-            x: -120,
+      gsap.from(
+        ".hero-title, .hero-subtitle",
+        {
+          x: -120,
+          opacity: 0,
+          duration: 1.2,
+          stagger: 0.14,
+          ease: "power4.out",
+          delay: 0.35,
+        }
+      );
+
+      gsap.fromTo(
+        ".hero-gallery-btn",
+        {
+          x: -80,
+          opacity: 0,
+        },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.9,
+          ease: "power3.out",
+          delay: 0.9,
+        }
+      );
+
+      /* =================================================
+         SECTION REVEALS
+      ================================================= */
+
+      gsap.utils
+        .toArray<HTMLElement>(
+          ".reveal-section"
+        )
+        .forEach((section) => {
+
+          gsap.from(section, {
+
+            y: 55,
+
             opacity: 0,
-            duration: 1.2,
-            stagger: 0.14,
-            ease: "power4.out",
-            delay: 0.35,
-          }
-        );
 
-
-        gsap.fromTo(
-          ".hero-gallery-btn",
-          {
-            x: -80,
-            opacity: 0,
-          },
-          {
-            x: 0,
-            opacity: 1,
             duration: 0.9,
+
             ease: "power3.out",
-            delay: 0.9,
-          }
+
+            scrollTrigger: {
+              trigger: section,
+              start: "top 82%",
+            },
+
+          });
+
+        });
+
+      /* =================================================
+         CARDS REVEAL
+      ================================================= */
+
+      gsap.utils
+        .toArray<HTMLElement>(
+          ".service-card, .styles article, .faq-item, .footer-col"
+        )
+        .forEach((item) => {
+
+          gsap.from(item, {
+
+            y: 35,
+
+            opacity: 0,
+
+            duration: 0.7,
+
+            ease: "power2.out",
+
+            scrollTrigger: {
+              trigger: item,
+              start: "top 90%",
+            },
+
+          });
+
+        });
+
+      /* =================================================
+         HORIZONTAL PHOTO GALLERY
+      ================================================= */
+
+      const section =
+        gallerySectionRef.current;
+
+      const sticky =
+        galleryStickyRef.current;
+
+      const viewport =
+        galleryViewportRef.current;
+
+      const track =
+        galleryTrackRef.current;
+
+      if (
+        !section ||
+        !sticky ||
+        !viewport ||
+        !track
+      ) {
+        return;
+      }
+
+      /* -------------------------------------------------
+         Calculate horizontal distance
+      ------------------------------------------------- */
+
+      const getDistance = () => {
+
+        const distance =
+          track.scrollWidth -
+          viewport.clientWidth;
+
+        return Math.max(
+          0,
+          distance
         );
 
+      };
 
-        /* =================================================
-           SECTION REVEALS
-        ================================================= */
+      /* -------------------------------------------------
+         Refresh helper
+      ------------------------------------------------- */
 
-        gsap.utils
-          .toArray<HTMLElement>(
-            ".reveal-section"
-          )
-          .forEach((section) => {
+      let refreshFrame:
+        number | null = null;
 
-            gsap.from(section, {
-
-              y: 55,
-
-              opacity: 0,
-
-              duration: 0.9,
-
-              ease: "power3.out",
-
-              scrollTrigger: {
-                trigger: section,
-                start: "top 82%",
-              },
-
-            });
-
-          });
-
-
-        /* =================================================
-           CARDS REVEAL
-        ================================================= */
-
-        gsap.utils
-          .toArray<HTMLElement>(
-            ".service-card, .styles article, .faq-item, .footer-col"
-          )
-          .forEach((item) => {
-
-            gsap.from(item, {
-
-              y: 35,
-
-              opacity: 0,
-
-              duration: 0.7,
-
-              ease: "power2.out",
-
-              scrollTrigger: {
-                trigger: item,
-                start: "top 90%",
-              },
-
-            });
-
-          });
-
-
-        /* =================================================
-           HORIZONTAL PHOTO GALLERY
-
-           Vertical scroll controls horizontal movement.
-
-           GSAP controls pinning.
-           CSS does NOT use position: sticky.
-        ================================================= */
-
-        const section =
-          gallerySectionRef.current;
-
-        const sticky =
-          galleryStickyRef.current;
-
-        const viewport =
-          galleryViewportRef.current;
-
-        const track =
-          galleryTrackRef.current;
-
+      const refreshGallery = () => {
 
         if (
-          !section ||
-          !sticky ||
-          !viewport ||
-          !track
+          refreshFrame !== null
         ) {
           return;
         }
 
+        refreshFrame =
+          window.requestAnimationFrame(
+            () => {
 
-        /* -------------------------------------------------
-           Calculate horizontal distance
-        ------------------------------------------------- */
+              refreshFrame = null;
 
-        const getDistance = () => {
+              ScrollTrigger.refresh();
 
-          const distance =
-            track.scrollWidth -
-            viewport.clientWidth;
-
-          return Math.max(
-            0,
-            distance
+            }
           );
 
-        };
+      };
 
+      /* -------------------------------------------------
+         Horizontal gallery animation
+      ------------------------------------------------- */
 
-        /* -------------------------------------------------
-           Horizontal gallery animation
-        ------------------------------------------------- */
+      gsap.to(
+        track,
+        {
+          x: () =>
+            -getDistance(),
 
-        gsap.to(
-          track,
-          {
-            x: () =>
-              -getDistance(),
+          ease: "none",
 
-            ease: "none",
+          scrollTrigger: {
 
-            scrollTrigger: {
+            trigger: section,
 
-              trigger: section,
+            start: "top top",
 
-              start: "top top",
+            end: () =>
+              `+=${Math.max(
+                getDistance(),
+                window.innerHeight
+              )}`,
 
-              end: () =>
-                `+=${Math.max(
-                  getDistance(),
-                  window.innerHeight
-                )}`,
+            pin: sticky,
 
-              pin: sticky,
+            pinSpacing: true,
 
-              pinSpacing: true,
+            scrub: 1,
 
-              scrub: 1,
+            invalidateOnRefresh: true,
 
-              invalidateOnRefresh: true,
+            anticipatePin: 1,
 
-              anticipatePin: 1,
+          },
 
-              /*
-              markers: true,
-              */
+        }
+      );
 
-            },
+      /* -------------------------------------------------
+         Resize observer
+      ------------------------------------------------- */
 
-          }
+      const resizeObserver =
+        new ResizeObserver(
+          refreshGallery
         );
 
+      resizeObserver.observe(
+        viewport
+      );
 
-        /* -------------------------------------------------
-           Refresh helper
-        ------------------------------------------------- */
+      resizeObserver.observe(
+        track
+      );
 
-        let refreshFrame:
-          number | null = null;
+      /* -------------------------------------------------
+         Image loading
+      ------------------------------------------------- */
 
+      const images =
+        track.querySelectorAll<HTMLImageElement>(
+          "img"
+        );
 
-        const refreshGallery = () => {
+      images.forEach((img) => {
 
-          if (
-            refreshFrame !== null
-          ) {
+        if (!img.complete) {
+
+          img.addEventListener(
+            "load",
+            refreshGallery,
+            {
+              once: true,
+            }
+          );
+
+          img.addEventListener(
+            "error",
+            refreshGallery,
+            {
+              once: true,
+            }
+          );
+
+        }
+
+      });
+
+      /* -------------------------------------------------
+         Window load
+      ------------------------------------------------- */
+
+      window.addEventListener(
+        "load",
+        refreshGallery
+      );
+
+      /* -------------------------------------------------
+         Initial refresh
+      ------------------------------------------------- */
+
+      refreshGallery();
+
+      /* =================================================
+         IMAGE HOVER
+      ================================================= */
+
+      gsap.utils
+        .toArray<HTMLElement>(
+          ".gallery-item, .service-img-wrapper, .styles article, .story img"
+        )
+        .forEach((item) => {
+
+          const imageElement =
+            item.matches("img")
+              ? item
+              : item.querySelector("img");
+
+          if (!imageElement) {
             return;
           }
 
+          const enter = () => {
 
-          refreshFrame =
-            window.requestAnimationFrame(
-              () => {
+            gsap.to(item, {
 
-                refreshFrame = null;
+              y: -5,
 
-                ScrollTrigger.refresh();
+              duration: 0.35,
+
+              ease: "power2.out",
+
+            });
+
+            gsap.to(
+              imageElement,
+              {
+
+                scale: 1.06,
+
+                filter:
+                  "brightness(1.08)",
+
+                duration: 0.55,
+
+                ease: "power3.out",
 
               }
             );
 
-        };
+          };
 
+          const leave = () => {
 
-        /* -------------------------------------------------
-           Resize observer
-        ------------------------------------------------- */
+            gsap.to(item, {
 
-        const resizeObserver =
-          new ResizeObserver(
-            refreshGallery
+              y: 0,
+
+              duration: 0.4,
+
+              ease: "power2.out",
+
+            });
+
+            gsap.to(
+              imageElement,
+              {
+
+                scale: 1,
+
+                filter:
+                  "brightness(1)",
+
+                duration: 0.55,
+
+                ease: "power3.out",
+
+              }
+            );
+
+          };
+
+          item.addEventListener(
+            "mouseenter",
+            enter
           );
 
-
-        resizeObserver.observe(
-          viewport
-        );
-
-        resizeObserver.observe(
-          track
-        );
-
-
-        /* -------------------------------------------------
-           Image loading
-        ------------------------------------------------- */
-
-        const images =
-          track.querySelectorAll<HTMLImageElement>(
-            "img"
+          item.addEventListener(
+            "mouseleave",
+            leave
           );
 
+          removeHoverListeners.push(
+            () => {
 
-        images.forEach((img) => {
+              item.removeEventListener(
+                "mouseenter",
+                enter
+              );
 
-          if (!img.complete) {
+              item.removeEventListener(
+                "mouseleave",
+                leave
+              );
 
-            img.addEventListener(
-              "load",
-              refreshGallery,
-              {
-                once: true,
-              }
-            );
-
-
-            img.addEventListener(
-              "error",
-              refreshGallery,
-              {
-                once: true,
-              }
-            );
-
-          }
+            }
+          );
 
         });
 
+      /* -------------------------------------------------
+         SAFE GALLERY CLEANUP
+      ------------------------------------------------- */
 
-        /* -------------------------------------------------
-           Window load
-        ------------------------------------------------- */
+      cleanupGallery = () => {
 
-        window.addEventListener(
+        resizeObserver.disconnect();
+
+        window.removeEventListener(
           "load",
           refreshGallery
         );
 
+        if (
+          refreshFrame !== null
+        ) {
 
-        /* -------------------------------------------------
-           Initial refresh
-        ------------------------------------------------- */
-
-        refreshGallery();
-
-
-        /* =================================================
-           IMAGE HOVER
-        ================================================= */
-
-        gsap.utils
-          .toArray<HTMLElement>(
-            ".gallery-item, .service-img-wrapper, .styles article, .story img"
-          )
-          .forEach((item) => {
-
-            const imageElement =
-              item.matches("img")
-                ? item
-                : item.querySelector("img");
-
-
-            if (!imageElement) {
-              return;
-            }
-
-
-            const enter = () => {
-
-              gsap.to(item, {
-
-                y: -5,
-
-                duration: 0.35,
-
-                ease: "power2.out",
-
-              });
-
-
-              gsap.to(
-                imageElement,
-                {
-
-                  scale: 1.06,
-
-                  filter:
-                    "brightness(1.08)",
-
-                  duration: 0.55,
-
-                  ease: "power3.out",
-
-                }
-              );
-
-            };
-
-
-            const leave = () => {
-
-              gsap.to(item, {
-
-                y: 0,
-
-                duration: 0.4,
-
-                ease: "power2.out",
-
-              });
-
-
-              gsap.to(
-                imageElement,
-                {
-
-                  scale: 1,
-
-                  filter:
-                    "brightness(1)",
-
-                  duration: 0.55,
-
-                  ease: "power3.out",
-
-                }
-              );
-
-            };
-
-
-            item.addEventListener(
-              "mouseenter",
-              enter
-            );
-
-
-            item.addEventListener(
-              "mouseleave",
-              leave
-            );
-
-
-            removeHoverListeners.push(
-              () => {
-
-                item.removeEventListener(
-                  "mouseenter",
-                  enter
-                );
-
-                item.removeEventListener(
-                  "mouseleave",
-                  leave
-                );
-
-              }
-            );
-
-          });
-
-
-        /* -------------------------------------------------
-           Cleanup gallery observers/listeners
-        ------------------------------------------------- */
-
-        const cleanupGallery = () => {
-
-          resizeObserver.disconnect();
-
-          window.removeEventListener(
-            "load",
-            refreshGallery
+          window.cancelAnimationFrame(
+            refreshFrame
           );
 
+          refreshFrame = null;
 
-          if (
-            refreshFrame !== null
-          ) {
+        }
 
-            window.cancelAnimationFrame(
-              refreshFrame
-            );
+      };
 
-            refreshFrame = null;
-
-          }
-
-        };
-
-
-        (
-          context as unknown as {
-            add: (
-              callback: () => void
-            ) => void;
-          }
-        ).add(cleanupGallery);
-
-      });
-
+    });
 
     /* =====================================================
        CLEANUP
@@ -937,18 +880,18 @@ export default function Home() {
 
     return () => {
 
+      cleanupGallery?.();
+
       removeHoverListeners.forEach(
         (removeListener) =>
           removeListener()
       );
-
 
       context.revert();
 
     };
 
   }, []);
-
 
   /* =======================================================
      FAQ
@@ -966,7 +909,6 @@ export default function Home() {
 
   };
 
-
   /* =======================================================
      CLOSE MOBILE MENU
   ======================================================= */
@@ -979,7 +921,6 @@ export default function Home() {
 
   };
 
-
   /* =======================================================
      RENDER
   ======================================================= */
@@ -987,7 +928,6 @@ export default function Home() {
   return (
 
     <main className="relative min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans">
-
 
       {/* =====================================================
           LANDING SECTION
@@ -1002,7 +942,6 @@ export default function Home() {
             )})`,
         }}
       >
-
 
         {/* BACKGROUND VIDEO */}
 
@@ -1023,7 +962,6 @@ export default function Home() {
 
         </video>
 
-
         {/* DARK OVERLAY */}
 
         <div
@@ -1031,13 +969,11 @@ export default function Home() {
           aria-hidden="true"
         />
 
-
         {/* =================================================
-            FIXED HEADER
+            HEADER
         ================================================= */}
 
         <header className="site-header">
-
 
           {/* TOPBAR */}
 
@@ -1052,14 +988,12 @@ export default function Home() {
                 <FaFacebookF />
               </a>
 
-
               <a
                 href="#"
                 aria-label="YouTube"
               >
                 <FaYoutube />
               </a>
-
 
               <a
                 href="#"
@@ -1069,7 +1003,6 @@ export default function Home() {
               </a>
 
             </div>
-
 
             <div className="topbar-contact">
 
@@ -1084,7 +1017,6 @@ export default function Home() {
                 </span>
 
               </a>
-
 
               <a
                 href="tel:+923048055553"
@@ -1102,7 +1034,6 @@ export default function Home() {
 
           </div>
 
-
           {/* MAIN NAVBAR */}
 
           <nav
@@ -1112,7 +1043,6 @@ export default function Home() {
                 : "bg-gradient-to-b from-black/80 to-transparent"
             }`}
           >
-
 
             {/* DESKTOP LEFT */}
 
@@ -1125,12 +1055,10 @@ export default function Home() {
                 HOME
               </a>
 
-
               <MenuItem
                 label="WHAT WE DO"
                 items={menus.what}
               />
-
 
               <MenuItem
                 label="ABOUT"
@@ -1138,7 +1066,6 @@ export default function Home() {
               />
 
             </div>
-
 
             {/* CENTER LOGO */}
 
@@ -1155,7 +1082,6 @@ export default function Home() {
 
             </a>
 
-
             {/* DESKTOP RIGHT */}
 
             <div className="home-links right hidden xl:flex">
@@ -1165,12 +1091,10 @@ export default function Home() {
                 items={menus.location}
               />
 
-
               <MenuItem
                 label="GALLERY"
                 items={menus.gallery}
               />
-
 
               <a
                 href="/contact"
@@ -1180,7 +1104,6 @@ export default function Home() {
               </a>
 
             </div>
-
 
             {/* MOBILE HAMBURGER */}
 
@@ -1225,7 +1148,6 @@ export default function Home() {
 
           </nav>
 
-
           {/* =================================================
               MOBILE NAVIGATION
           ================================================= */}
@@ -1248,7 +1170,6 @@ export default function Home() {
                 HOME
               </a>
 
-
               {Object.entries(
                 menus
               ).map(
@@ -1270,16 +1191,13 @@ export default function Home() {
                         "GALLERY",
                     };
 
-
                   const displayLabel =
                     sectionLabels[key] ||
                     key.toUpperCase();
 
-
                   const isOpen =
                     mobileMenuSection ===
                     key;
-
 
                   return (
 
@@ -1310,7 +1228,6 @@ export default function Home() {
                           {displayLabel}
                         </span>
 
-
                         <FiChevronDown
                           className={`transition-transform duration-200 ${
                             isOpen
@@ -1321,7 +1238,6 @@ export default function Home() {
                         />
 
                       </button>
-
 
                       {isOpen && (
 
@@ -1360,7 +1276,6 @@ export default function Home() {
                 }
               )}
 
-
               <a
                 href="/contact"
                 onClick={
@@ -1375,7 +1290,6 @@ export default function Home() {
           )}
 
         </header>
-
 
         {/* =================================================
             HERO CONTENT
@@ -1400,7 +1314,6 @@ export default function Home() {
 
             </h1>
 
-
             <p className="hero-subtitle">
 
               Waseem Saleem Photography offers
@@ -1410,7 +1323,6 @@ export default function Home() {
               and storytelling.
 
             </p>
-
 
             <a
               className="hero-gallery-btn"
@@ -1425,7 +1337,6 @@ export default function Home() {
 
       </section>
 
-
       {/* =====================================================
           PHOTO GALLERY
       ===================================================== */}
@@ -1438,7 +1349,6 @@ export default function Home() {
         <h2 className="text-3xl font-serif tracking-widest mb-4 uppercase">
           PHOTO GALLERY
         </h2>
-
 
         <p className="text-sm text-gray-400 max-w-3xl mx-auto mb-2 leading-relaxed">
 
@@ -1456,14 +1366,12 @@ export default function Home() {
 
         </p>
 
-
         <p className="text-sm font-semibold text-white mb-12">
 
           Get the best wedding photography
           experience from us.
 
         </p>
-
 
         <div
           className="gallery-section"
@@ -1515,7 +1423,6 @@ export default function Home() {
 
       </section>
 
-
       {/* =====================================================
           SERVICES
       ===================================================== */}
@@ -1530,7 +1437,6 @@ export default function Home() {
           <h2 className="text-3xl font-serif tracking-widest mb-14 text-black uppercase">
             OUR SERVICES
           </h2>
-
 
           <div className="service-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
 
@@ -1554,18 +1460,15 @@ export default function Home() {
 
                   </div>
 
-
                   <div className="service-content flex flex-col items-center flex-grow w-full px-2">
 
                     <h3 className="font-serif text-2xl tracking-wide text-black mb-4 uppercase max-w-[260px] leading-snug">
                       {item.title}
                     </h3>
 
-
                     <p className="text-xs md:text-sm text-gray-600 leading-relaxed mb-8 max-w-[360px]">
                       {item.text}
                     </p>
-
 
                     <a
                       href="#contact"
@@ -1587,7 +1490,6 @@ export default function Home() {
 
       </section>
 
-
       {/* =====================================================
           STORY
       ===================================================== */}
@@ -1607,7 +1509,6 @@ export default function Home() {
 
           </h2>
 
-
           <p className="text-sm text-gray-400 leading-relaxed mb-8">
 
             Your love story is made of the
@@ -1619,7 +1520,6 @@ export default function Home() {
 
           </p>
 
-
           <a
             className="outline-button border border-white px-6 py-3 text-xs tracking-widest hover:bg-white hover:text-black transition-all inline-block"
             href="#contact"
@@ -1628,7 +1528,6 @@ export default function Home() {
           </a>
 
         </div>
-
 
         <div>
 
@@ -1644,7 +1543,6 @@ export default function Home() {
 
       </section>
 
-
       {/* =====================================================
           STYLES
       ===================================================== */}
@@ -1656,7 +1554,6 @@ export default function Home() {
           <h2 className="text-2xl md:text-3xl font-light tracking-widest mb-12">
             WEDDING PHOTOGRAPHY STYLE
           </h2>
-
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -1676,7 +1573,6 @@ export default function Home() {
 
             </article>
 
-
             <article>
 
               <img
@@ -1692,7 +1588,6 @@ export default function Home() {
               </h3>
 
             </article>
-
 
             <article>
 
@@ -1715,7 +1610,6 @@ export default function Home() {
         </div>
 
       </section>
-
 
       {/* =====================================================
           FAQ
@@ -1740,7 +1634,6 @@ export default function Home() {
 
             </h2>
 
-
             <a
               href="#contact"
               className="faq-contact-btn inline-block bg-black text-white px-10 py-5 text-xs font-bold tracking-[0.2em] uppercase hover:bg-neutral-800 transition-colors shadow-sm"
@@ -1750,7 +1643,6 @@ export default function Home() {
 
           </div>
 
-
           <div className="faq-right flex flex-col gap-5">
 
             {faqs.map(
@@ -1758,7 +1650,6 @@ export default function Home() {
 
                 const isOpen =
                   openIndex === index;
-
 
                 return (
 
@@ -1783,7 +1674,6 @@ export default function Home() {
                         {faq.question}
                       </span>
 
-
                       <span className="faq-icon-circle w-9 h-9 rounded-full border border-black flex items-center justify-center flex-shrink-0 transition-transform duration-200">
 
                         {isOpen ? (
@@ -1795,7 +1685,6 @@ export default function Home() {
                       </span>
 
                     </button>
-
 
                     {isOpen && (
 
@@ -1822,7 +1711,6 @@ export default function Home() {
 
       </section>
 
-
       {/* =====================================================
           FOOTER
       ===================================================== */}
@@ -1834,7 +1722,6 @@ export default function Home() {
 
         <div className="footer-container max-w-[1350px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center mb-20 items-start">
 
-
           {/* FOOTER COLUMN 1 */}
 
           <div className="footer-col flex flex-col items-center">
@@ -1845,11 +1732,9 @@ export default function Home() {
               className="h-16 md:h-20 object-contain mb-8"
             />
 
-
             <h3 className="font-serif text-2xl tracking-[0.18em] mb-6 uppercase text-white font-normal">
               FOLLOW US
             </h3>
-
 
             <div className="footer-socials flex justify-center gap-5">
 
@@ -1861,7 +1746,6 @@ export default function Home() {
                 <FaFacebookF />
               </a>
 
-
               <a
                 href="#"
                 aria-label="Instagram"
@@ -1869,7 +1753,6 @@ export default function Home() {
               >
                 <FaInstagram />
               </a>
-
 
               <a
                 href="#"
@@ -1883,7 +1766,6 @@ export default function Home() {
 
           </div>
 
-
           {/* FOOTER COLUMN 2 */}
 
           <div className="footer-col flex flex-col items-center">
@@ -1891,7 +1773,6 @@ export default function Home() {
             <h2 className="font-serif text-2xl md:text-3xl tracking-[0.18em] mb-8 uppercase text-white font-normal">
               CONTACT
             </h2>
-
 
             <p className="text-base text-gray-200 mb-4 tracking-wide font-light">
 
@@ -1904,18 +1785,15 @@ export default function Home() {
 
             </p>
 
-
             <p className="text-base text-gray-200 mb-2 tracking-wide font-light">
               +92 309-925 2015
             </p>
-
 
             <p className="text-base text-gray-200 tracking-wide font-light">
               +92 304-805 5553
             </p>
 
           </div>
-
 
           {/* FOOTER COLUMN 3 */}
 
@@ -1925,7 +1803,6 @@ export default function Home() {
               LOCATIONS
             </h2>
 
-
             <p className="text-base text-gray-200 max-w-[320px] leading-relaxed mb-6 font-light">
 
               We providing the best photography
@@ -1933,11 +1810,9 @@ export default function Home() {
 
             </p>
 
-
             <p className="text-base text-gray-200 mb-2 tracking-wide font-light">
               Lahore – Islamabad
             </p>
-
 
             <p className="text-base text-gray-200 tracking-wide font-light">
               Karachi
@@ -1946,7 +1821,6 @@ export default function Home() {
           </div>
 
         </div>
-
 
         {/* FOOTER BOTTOM */}
 
@@ -1957,14 +1831,12 @@ export default function Home() {
             Terms &amp; Conditions | Privacy Policy
           </p>
 
-
           <p className="text-gray-300">
 
             Designed By{" "}
 
             <a
               href="#"
-              
               className="text-white underline hover:text-gray-200 font-normal"
             >
               BeginTech
