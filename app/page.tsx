@@ -75,10 +75,6 @@ const gallery = [
     "Candid wedding moment",
   ],
   [
-    "home-main-gallery6-768x512.webp",
-    "Wedding celebration",
-  ],
-  [
     "Waseem-Saleem-home-main-gallery5-1-1-768x512.webp",
     "Wedding couple",
   ],
@@ -93,10 +89,6 @@ const gallery = [
   [
     "Edits-web-1-768x512.webp",
     "Wedding ceremony",
-  ],
-  [
-    "Edits-web-768x512.webp",
-    "Bride and groom",
   ],
   [
     "MGL2603-inta-web-low-1-768x512.webp",
