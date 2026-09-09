@@ -1052,7 +1052,7 @@ export default function Home() {
       ===================================================== */}
 
       <section
-        className="gallery-intro reveal-section py-20 px-6 max-w-[1400px] mx-auto text-center"
+        className="gallery-intro py-20 px-6 max-w-[1400px] mx-auto text-center"
         id="gallery"
       >
 
