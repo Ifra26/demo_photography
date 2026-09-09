@@ -1,7 +1,11 @@
-
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 import {
   FaFacebookF,
@@ -25,17 +29,22 @@ const image = (name: string) => `/images/${name}`;
 const locationSlug = (label: string) => {
   const city = label
     .toLowerCase()
-    .match(/(lahore|karachi|islamabad|dubai)$/)?.[1];
+    .match(
+      /(lahore|karachi|islamabad|dubai)$/
+    )?.[1];
 
   return (
     city ??
-    label.toLowerCase().replace(/\s+/g, "-")
+    label
+      .toLowerCase()
+      .replace(/\s+/g, "-")
   );
 };
 
+
 /* =========================================================
    GALLERY
-   ========================================================= */
+========================================================= */
 
 const gallery = [
   [
@@ -160,9 +169,10 @@ const gallery = [
   ],
 ];
 
+
 /* =========================================================
    SERVICES
-   ========================================================= */
+========================================================= */
 
 const services = [
   {
@@ -209,9 +219,10 @@ const services = [
   },
 ];
 
+
 /* =========================================================
    FAQ
-   ========================================================= */
+========================================================= */
 
 const faqs = [
   {
@@ -246,9 +257,10 @@ const faqs = [
   },
 ];
 
+
 /* =========================================================
    NAVIGATION MENUS
-   ========================================================= */
+========================================================= */
 
 const menus = {
   what: [
@@ -290,9 +302,10 @@ const menuHref = (
     ? `/location/${locationSlug(item)}`
     : "#services";
 
+
 /* =========================================================
    DESKTOP MENU ITEM
-   ========================================================= */
+========================================================= */
 
 function MenuItem({
   label,
@@ -303,6 +316,7 @@ function MenuItem({
 }) {
   return (
     <div className="menu-item relative group py-2">
+
       <button
         type="button"
         className="menu-trigger flex items-center gap-1.5 hover:opacity-80 transition-opacity"
@@ -321,6 +335,7 @@ function MenuItem({
 
       {items && (
         <div className="dropdown absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:flex group-focus-within:flex flex-col bg-black/95 border border-white/10 min-w-[220px] py-3 z-50 shadow-2xl">
+
           {items.map((item) => (
             <a
               href={menuHref(label, item)}
@@ -330,21 +345,33 @@ function MenuItem({
               {item}
             </a>
           ))}
+
         </div>
       )}
+
     </div>
   );
 }
 
+
 /* =========================================================
    HOME
-   ========================================================= */
+========================================================= */
 
 export default function Home() {
-  const gallerySectionRef = useRef<HTMLDivElement>(null);
-  const galleryStickyRef = useRef<HTMLDivElement>(null);
-  const galleryViewportRef = useRef<HTMLDivElement>(null);
-  const galleryTrackRef = useRef<HTMLDivElement>(null);
+
+  const gallerySectionRef =
+    useRef<HTMLDivElement>(null);
+
+  const galleryStickyRef =
+    useRef<HTMLDivElement>(null);
+
+  const galleryViewportRef =
+    useRef<HTMLDivElement>(null);
+
+  const galleryTrackRef =
+    useRef<HTMLDivElement>(null);
+
   const [scrolled, setScrolled] =
     useState(false);
 
@@ -357,11 +384,13 @@ export default function Home() {
   const [mobileMenuSection, setMobileMenuSection] =
     useState<string | null>(null);
 
+
   /* =======================================================
      HEADER SCROLL
-     ======================================================= */
+  ======================================================= */
 
   useEffect(() => {
+
     const updateHeader = () => {
       setScrolled(window.scrollY > 30);
     };
@@ -375,44 +404,60 @@ export default function Home() {
     );
 
     return () => {
+
       window.removeEventListener(
         "scroll",
         updateHeader
       );
+
     };
+
   }, []);
+
 
   /* =======================================================
      LOCK BODY SCROLL WHEN MOBILE MENU IS OPEN
-     ======================================================= */
+  ======================================================= */
 
   useEffect(() => {
+
     if (mobileMenuOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow =
+        "hidden";
     } else {
-      document.body.style.overflow = "";
+      document.body.style.overflow =
+        "";
     }
 
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow =
+        "";
     };
+
   }, [mobileMenuOpen]);
 
+
   /* =======================================================
-     GSAP
-     ======================================================= */
+     GSAP + SCROLLTRIGGER
+  ======================================================= */
 
   useLayoutEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.registerPlugin(
+      ScrollTrigger
+    );
 
     const removeHoverListeners: Array<
       () => void
     > = [];
 
-    const mm = gsap.matchMedia();
 
     const context = gsap.context(() => {
-      /* Hero animation */
+
+
+      /* ===================================================
+         HERO ANIMATION
+      =================================================== */
 
       gsap.from(
         ".hero-title, .hero-subtitle",
@@ -425,6 +470,7 @@ export default function Home() {
           delay: 0.35,
         }
       );
+
 
       gsap.fromTo(
         ".hero-gallery-btn",
@@ -441,156 +487,356 @@ export default function Home() {
         }
       );
 
-      /* Section reveal */
+
+      /* ===================================================
+         SECTION REVEALS
+      =================================================== */
 
       gsap.utils
         .toArray<HTMLElement>(
           ".reveal-section"
         )
         .forEach((section) => {
+
           gsap.from(section, {
+
             y: 55,
+
             opacity: 0,
+
             duration: 0.9,
+
             ease: "power3.out",
 
             scrollTrigger: {
               trigger: section,
               start: "top 82%",
             },
+
           });
+
         });
 
-      /* Cards reveal */
+
+      /* ===================================================
+         CARDS REVEAL
+      =================================================== */
 
       gsap.utils
         .toArray<HTMLElement>(
           ".service-card, .styles article, .faq-item, .footer-col"
         )
         .forEach((item) => {
+
           gsap.from(item, {
+
             y: 35,
+
             opacity: 0,
+
             duration: 0.7,
+
             ease: "power2.out",
 
             scrollTrigger: {
               trigger: item,
               start: "top 90%",
             },
+
           });
+
         });
+
+
+      /* ===================================================
+         HORIZONTAL PHOTO GALLERY
+
+         Vertical scrolling controls horizontal movement.
+
+         IMPORTANT:
+         GSAP controls the pin.
+         CSS does NOT use position: sticky anymore.
+      =================================================== */
+
+      const section =
+        gallerySectionRef.current;
+
+      const sticky =
+        galleryStickyRef.current;
+
+      const viewport =
+        galleryViewportRef.current;
+
+      const track =
+        galleryTrackRef.current;
+
+
+      if (
+        !section ||
+        !sticky ||
+        !viewport ||
+        !track
+      ) {
+        return;
+      }
+
 
       /* ---------------------------------------------------
-         PHOTO GALLERY — scroll-driven horizontal track
+         Calculate horizontal distance
+      --------------------------------------------------- */
 
-         Vertical scroll pins the gallery and scrubs the
-         track horizontally; distance is measured dynamically.
-         --------------------------------------------------- */
+      const getDistance = () => {
 
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
-        const section = gallerySectionRef.current;
-        const sticky = galleryStickyRef.current;
-        const viewport = galleryViewportRef.current;
-        const track = galleryTrackRef.current;
+        const distance =
+          track.scrollWidth -
+          viewport.clientWidth;
 
-        if (!section || !sticky || !viewport || !track) return;
+        return Math.max(
+          0,
+          distance
+        );
 
-        const getDistance = () =>
-          Math.max(0, track.scrollWidth - viewport.clientWidth);
+      };
 
-        const galleryTween = gsap.to(track, {
-          x: () => -getDistance(),
+
+      /* ---------------------------------------------------
+         Create horizontal animation
+      --------------------------------------------------- */
+
+      const galleryTween = gsap.to(
+        track,
+        {
+
+          x: () =>
+            -getDistance(),
+
           ease: "none",
+
           scrollTrigger: {
+
             trigger: section,
+
             start: "top top",
-            end: () => `+=${getDistance()}`,
+
+            /*
+             * Horizontal distance becomes
+             * vertical scroll distance.
+             *
+             * Minimum one viewport height prevents
+             * instant unpinning on small screens.
+             */
+
+            end: () =>
+              `+=${Math.max(
+                getDistance(),
+                window.innerHeight
+              )}`,
+
             pin: sticky,
+
+            pinSpacing: true,
+
             scrub: 1,
+
             invalidateOnRefresh: true,
+
             anticipatePin: 1,
+
+            /*
+             * Uncomment this if you need to debug
+             * the start/end positions.
+             *
+             * markers: true,
+             */
+
           },
-        });
 
-        let refreshFrame: number | null = null;
-        const refreshGallery = () => {
-          if (refreshFrame !== null) return;
+        }
+      );
 
-          refreshFrame = window.requestAnimationFrame(() => {
-            refreshFrame = null;
-            ScrollTrigger.refresh();
-          });
-        };
 
-        const resizeObserver = new ResizeObserver(refreshGallery);
-        resizeObserver.observe(viewport);
-        resizeObserver.observe(track);
+      /* ---------------------------------------------------
+         Refresh helper
+      --------------------------------------------------- */
 
-        track
-          .querySelectorAll<HTMLImageElement>("img")
-          .forEach((img) => {
-            if (!img.complete) {
-              img.addEventListener("load", refreshGallery, { once: true });
-              img.addEventListener("error", refreshGallery, { once: true });
+      let refreshFrame:
+        number | null = null;
+
+
+      const refreshGallery = () => {
+
+        if (
+          refreshFrame !== null
+        ) {
+          return;
+        }
+
+
+        refreshFrame =
+          window.requestAnimationFrame(
+            () => {
+
+              refreshFrame = null;
+
+              ScrollTrigger.refresh();
+
             }
-          });
+          );
 
-        refreshGallery();
+      };
 
-        return () => {
-          if (refreshFrame !== null) {
-            window.cancelAnimationFrame(refreshFrame);
-          }
-          resizeObserver.disconnect();
-          galleryTween.scrollTrigger?.kill();
-          galleryTween.kill();
-        };
+
+      /* ---------------------------------------------------
+         Resize observer
+      --------------------------------------------------- */
+
+      const resizeObserver =
+        new ResizeObserver(
+          refreshGallery
+        );
+
+
+      resizeObserver.observe(
+        viewport
+      );
+
+      resizeObserver.observe(
+        track
+      );
+
+
+      /* ---------------------------------------------------
+         Image loading
+      --------------------------------------------------- */
+
+      const images =
+        track.querySelectorAll<HTMLImageElement>(
+          "img"
+        );
+
+
+      images.forEach((img) => {
+
+        if (!img.complete) {
+
+          img.addEventListener(
+            "load",
+            refreshGallery,
+            { once: true }
+          );
+
+          img.addEventListener(
+            "error",
+            refreshGallery,
+            { once: true }
+          );
+
+        }
+
       });
 
-      /* Image hover */
+
+      /* ---------------------------------------------------
+         Window load
+      --------------------------------------------------- */
+
+      window.addEventListener(
+        "load",
+        refreshGallery
+      );
+
+
+      /* ---------------------------------------------------
+         Initial refresh
+      --------------------------------------------------- */
+
+      refreshGallery();
+
+
+      /* ===================================================
+         IMAGE HOVER
+      =================================================== */
 
       gsap.utils
         .toArray<HTMLElement>(
           ".gallery-item, .service-img-wrapper, .styles article, .story img"
         )
         .forEach((item) => {
+
           const imageElement =
             item.matches("img")
               ? item
               : item.querySelector("img");
 
-          if (!imageElement) return;
+
+          if (!imageElement) {
+            return;
+          }
+
 
           const enter = () => {
+
             gsap.to(item, {
+
               y: -5,
+
               duration: 0.35,
+
               ease: "power2.out",
+
             });
 
-            gsap.to(imageElement, {
-              scale: 1.06,
-              filter: "brightness(1.08)",
-              duration: 0.55,
-              ease: "power3.out",
-            });
+
+            gsap.to(
+              imageElement,
+              {
+
+                scale: 1.06,
+
+                filter:
+                  "brightness(1.08)",
+
+                duration: 0.55,
+
+                ease: "power3.out",
+
+              }
+            );
+
           };
+
 
           const leave = () => {
+
             gsap.to(item, {
+
               y: 0,
+
               duration: 0.4,
+
               ease: "power2.out",
+
             });
 
-            gsap.to(imageElement, {
-              scale: 1,
-              filter: "brightness(1)",
-              duration: 0.55,
-              ease: "power3.out",
-            });
+
+            gsap.to(
+              imageElement,
+              {
+
+                scale: 1,
+
+                filter:
+                  "brightness(1)",
+
+                duration: 0.55,
+
+                ease: "power3.out",
+
+              }
+            );
+
           };
+
 
           item.addEventListener(
             "mouseenter",
@@ -602,57 +848,112 @@ export default function Home() {
             leave
           );
 
-          removeHoverListeners.push(() => {
-            item.removeEventListener(
-              "mouseenter",
-              enter
-            );
 
-            item.removeEventListener(
-              "mouseleave",
-              leave
-            );
-          });
+          removeHoverListeners.push(
+            () => {
+
+              item.removeEventListener(
+                "mouseenter",
+                enter
+              );
+
+              item.removeEventListener(
+                "mouseleave",
+                leave
+              );
+
+            }
+          );
+
         });
+
     });
 
+
+    /* ===================================================
+       CLEANUP
+    =================================================== */
+
     return () => {
+
+      if (
+        gallerySectionRef.current
+      ) {
+        ScrollTrigger.getAll()
+          .forEach((trigger) => {
+
+            const triggerElement =
+              trigger.trigger;
+
+            if (
+              triggerElement &&
+              (
+                triggerElement ===
+                gallerySectionRef.current
+                ||
+                triggerElement.closest(
+                  ".gallery-section"
+                )
+              )
+            ) {
+              trigger.kill();
+            }
+
+          });
+      }
+
+
       removeHoverListeners.forEach(
         (removeListener) =>
           removeListener()
       );
 
-      mm.revert();
 
       context.revert();
+
     };
+
   }, []);
+
 
   /* =======================================================
      FAQ
-     ======================================================= */
+  ======================================================= */
 
-  const toggleFaq = (index: number) => {
+  const toggleFaq = (
+    index: number
+  ) => {
+
     setOpenIndex(
-      openIndex === index ? null : index
+      openIndex === index
+        ? null
+        : index
     );
+
   };
+
 
   /* =======================================================
      CLOSE MOBILE MENU
-     ======================================================= */
+  ======================================================= */
 
   const closeMobileMenu = () => {
+
     setMobileMenuOpen(false);
+
     setMobileMenuSection(null);
+
   };
+
 
   /* =======================================================
      RENDER
-     ======================================================= */
+  ======================================================= */
 
   return (
+
     <main className="relative min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans">
+
 
       {/* =====================================================
           LANDING SECTION
@@ -661,13 +962,14 @@ export default function Home() {
       <section
         className="landing-hero relative min-h-screen w-full overflow-hidden bg-cover bg-center bg-no-repeat flex flex-col justify-between"
         style={{
-          backgroundImage: `url(${image(
-            "compressed_IMG_1487-F-1.jpg"
-          )})`,
+          backgroundImage:
+            `url(${image(
+              "compressed_IMG_1487-F-1.jpg"
+            )})`,
         }}
       >
 
-        {/* Background video */}
+        {/* BACKGROUND VIDEO */}
 
         <video
           className="absolute inset-0 z-0 h-full w-full object-cover"
@@ -678,24 +980,29 @@ export default function Home() {
           preload="metadata"
           aria-hidden="true"
         >
+
           <source
             src="/backgorund_video.mp4"
             type="video/mp4"
           />
+
         </video>
 
-        {/* Dark overlay */}
+
+        {/* DARK OVERLAY */}
 
         <div
           className="absolute inset-0 z-0 bg-black/35"
           aria-hidden="true"
         />
 
+
         {/* =================================================
             FIXED HEADER
         ================================================= */}
 
         <header className="site-header">
+
 
           {/* TOPBAR */}
 
@@ -726,35 +1033,40 @@ export default function Home() {
 
             </div>
 
+
             <div className="topbar-contact">
 
               <a
                 href="mailto:waseemsaleemphotography@gmail.com"
               >
+
                 <FaEnvelope className="text-[11px]" />
 
                 <span>
                   WASEEMSALEEMPHOTOGRAPHY@GMAIL.COM
                 </span>
+
               </a>
+
 
               <a
                 href="tel:+923048055553"
               >
+
                 <FaPhoneAlt className="text-[11px]" />
 
                 <span>
                   +92 304 8055553
                 </span>
+
               </a>
 
             </div>
 
           </div>
 
-          {/* =================================================
-              MAIN NAVBAR
-          ================================================= */}
+
+          {/* MAIN NAVBAR */}
 
           <nav
             className={`home-nav ${
@@ -763,6 +1075,7 @@ export default function Home() {
                 : "bg-gradient-to-b from-black/80 to-transparent"
             }`}
           >
+
 
             {/* DESKTOP LEFT */}
 
@@ -787,6 +1100,7 @@ export default function Home() {
 
             </div>
 
+
             {/* CENTER LOGO */}
 
             <a
@@ -794,11 +1108,14 @@ export default function Home() {
               className="logo-link"
               aria-label="Waseem Saleem Photography Home"
             >
+
               <img
                 src={image("logo.webp")}
                 alt="Waseem Saleem Photography"
               />
+
             </a>
+
 
             {/* DESKTOP RIGHT */}
 
@@ -823,9 +1140,8 @@ export default function Home() {
 
             </div>
 
-            {/* =================================================
-                MOBILE HAMBURGER
-            ================================================= */}
+
+            {/* MOBILE HAMBURGER */}
 
             <button
               type="button"
@@ -839,11 +1155,15 @@ export default function Home() {
               }
               aria-controls="mobile-navigation"
               onClick={() => {
+
                 if (mobileMenuOpen) {
                   closeMobileMenu();
                 } else {
-                  setMobileMenuOpen(true);
+                  setMobileMenuOpen(
+                    true
+                  );
                 }
+
               }}
               className={`mobile-menu-button ${
                 mobileMenuOpen
@@ -851,28 +1171,28 @@ export default function Home() {
                   : ""
               }`}
             >
+
               <span />
               <span />
               <span />
+
             </button>
 
           </nav>
 
+
           {/* =================================================
               MOBILE NAVIGATION
-              IMPORTANT:
-              This is outside <nav> to avoid stacking issues.
           ================================================= */}
 
           {mobileMenuOpen && (
+
             <div
               id="mobile-navigation"
               className="mobile-menu"
               role="navigation"
               aria-label="Mobile navigation"
             >
-
-              {/* HOME */}
 
               <a
                 href="#"
@@ -883,38 +1203,42 @@ export default function Home() {
                 HOME
               </a>
 
-              {/* MENU GROUPS */}
 
               {Object.entries(
                 menus
               ).map(
                 ([key, items]) => {
 
-                  const sectionLabels: Record<
-                    string,
-                    string
-                  > = {
-                    what: "WHAT WE DO",
-                    about: "ABOUT",
-                    location: "LOCATION",
-                    gallery: "GALLERY",
-                  };
+                  const sectionLabels:
+                    Record<string, string> =
+                    {
+                      what:
+                        "WHAT WE DO",
+                      about:
+                        "ABOUT",
+                      location:
+                        "LOCATION",
+                      gallery:
+                        "GALLERY",
+                    };
+
 
                   const displayLabel =
                     sectionLabels[key] ||
                     key.toUpperCase();
 
+
                   const isOpen =
                     mobileMenuSection ===
                     key;
 
+
                   return (
+
                     <div
                       className="mobile-menu-group"
                       key={key}
                     >
-
-                      {/* GROUP BUTTON */}
 
                       <button
                         type="button"
@@ -924,11 +1248,13 @@ export default function Home() {
                         }
                         aria-controls={`mobile-submenu-${key}`}
                         onClick={() => {
+
                           setMobileMenuSection(
                             isOpen
                               ? null
                               : key
                           );
+
                         }}
                       >
 
@@ -947,9 +1273,9 @@ export default function Home() {
 
                       </button>
 
-                      {/* SUBMENU */}
 
                       {isOpen && (
+
                         <div
                           className="mobile-submenu"
                           id={`mobile-submenu-${key}`}
@@ -957,6 +1283,7 @@ export default function Home() {
 
                           {items.map(
                             (item) => (
+
                               <a
                                 href={menuHref(
                                   displayLabel,
@@ -969,18 +1296,21 @@ export default function Home() {
                               >
                                 {item}
                               </a>
+
                             )
                           )}
 
                         </div>
+
                       )}
 
                     </div>
+
                   );
+
                 }
               )}
 
-              {/* CONTACT */}
 
               <a
                 href="/contact"
@@ -992,9 +1322,11 @@ export default function Home() {
               </a>
 
             </div>
+
           )}
 
         </header>
+
 
         {/* =================================================
             HERO CONTENT
@@ -1005,22 +1337,31 @@ export default function Home() {
           <div className="hero-copy">
 
             <h1 className="hero-title">
+
               WEDDING
               <br />
+
               PHOTOGRAPHER
               <br />
+
               TIMELESS, CINEMATIC
               <br />
+
               STORYTELLING
+
             </h1>
 
+
             <p className="hero-subtitle">
+
               Waseem Saleem Photography offers
               cinematic &amp; timeless wedding
               photography, capturing love, joy,
               and memories with creative elegance
               and storytelling.
+
             </p>
+
 
             <a
               className="hero-gallery-btn"
@@ -1035,6 +1376,7 @@ export default function Home() {
 
       </section>
 
+
       {/* =====================================================
           PHOTO GALLERY
       ===================================================== */}
@@ -1048,7 +1390,9 @@ export default function Home() {
           PHOTO GALLERY
         </h2>
 
+
         <p className="text-sm text-gray-400 max-w-3xl mx-auto mb-2 leading-relaxed">
+
           Your wedding day will always be one
           that you remember with immense
           fondness, and the best wedding
@@ -1060,12 +1404,17 @@ export default function Home() {
           to make sure all your smiles, gazes,
           and emotions are captured through
           cinematography.
+
         </p>
 
+
         <p className="text-sm font-semibold text-white mb-12">
+
           Get the best wedding photography
           experience from us.
+
         </p>
+
 
         <div
           className="gallery-section"
@@ -1089,17 +1438,21 @@ export default function Home() {
 
                 {gallery.map(
                   ([src, alt]) => (
+
                     <div
                       key={src}
                       className="gallery-item"
                     >
+
                       <img
                         src={image(src)}
                         alt={alt}
                         loading="eager"
                         decoding="async"
                       />
+
                     </div>
+
                   )
                 )}
 
@@ -1112,6 +1465,7 @@ export default function Home() {
         </div>
 
       </section>
+
 
       {/* =====================================================
           SERVICES
@@ -1128,10 +1482,12 @@ export default function Home() {
             OUR SERVICES
           </h2>
 
+
           <div className="service-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
 
             {services.map(
               (item) => (
+
                 <article
                   key={item.title}
                   className="service-card flex flex-col items-center text-center bg-white"
@@ -1149,15 +1505,18 @@ export default function Home() {
 
                   </div>
 
+
                   <div className="service-content flex flex-col items-center flex-grow w-full px-2">
 
                     <h3 className="font-serif text-2xl tracking-wide text-black mb-4 uppercase max-w-[260px] leading-snug">
                       {item.title}
                     </h3>
 
+
                     <p className="text-xs md:text-sm text-gray-600 leading-relaxed mb-8 max-w-[360px]">
                       {item.text}
                     </p>
+
 
                     <a
                       href="#contact"
@@ -1169,6 +1528,7 @@ export default function Home() {
                   </div>
 
                 </article>
+
               )
             )}
 
@@ -1177,6 +1537,7 @@ export default function Home() {
         </div>
 
       </section>
+
 
       {/* =====================================================
           STORY
@@ -1190,19 +1551,25 @@ export default function Home() {
         <div>
 
           <h2 className="text-2xl md:text-4xl font-light tracking-widest leading-snug mb-6">
+
             EVERY MOMENT DESERVES
             <br />
             TO BE REMEMBERED FOREVER
+
           </h2>
 
+
           <p className="text-sm text-gray-400 leading-relaxed mb-8">
+
             Your love story is made of the
             little glances, loud laughter, and
             beautiful chaos you never want to
             forget. We turn those honest moments
             into timeless photographs you can
             relive for generations.
+
           </p>
+
 
           <a
             className="outline-button border border-white px-6 py-3 text-xs tracking-widest hover:bg-white hover:text-black transition-all inline-block"
@@ -1212,6 +1579,7 @@ export default function Home() {
           </a>
 
         </div>
+
 
         <div>
 
@@ -1227,6 +1595,7 @@ export default function Home() {
 
       </section>
 
+
       {/* =====================================================
           STYLES
       ===================================================== */}
@@ -1238,6 +1607,7 @@ export default function Home() {
           <h2 className="text-2xl md:text-3xl font-light tracking-widest mb-12">
             WEDDING PHOTOGRAPHY STYLE
           </h2>
+
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 
@@ -1257,6 +1627,7 @@ export default function Home() {
 
             </article>
 
+
             <article>
 
               <img
@@ -1272,6 +1643,7 @@ export default function Home() {
               </h3>
 
             </article>
+
 
             <article>
 
@@ -1295,6 +1667,7 @@ export default function Home() {
 
       </section>
 
+
       {/* =====================================================
           FAQ
       ===================================================== */}
@@ -1309,12 +1682,15 @@ export default function Home() {
           <div className="faq-left">
 
             <h2 className="font-serif text-5xl md:text-6xl xl:text-[68px] leading-[1.08] mb-10 text-black uppercase tracking-wide font-normal">
+
               FREQUENTLY
               <br />
               ASKED
               <br />
               QUESTIONS
+
             </h2>
+
 
             <a
               href="#contact"
@@ -1325,6 +1701,7 @@ export default function Home() {
 
           </div>
 
+
           <div className="faq-right flex flex-col gap-5">
 
             {faqs.map(
@@ -1333,7 +1710,9 @@ export default function Home() {
                 const isOpen =
                   openIndex === index;
 
+
                 return (
+
                   <div
                     key={index}
                     className={`faq-item transition-all duration-300 ${
@@ -1355,6 +1734,7 @@ export default function Home() {
                         {faq.question}
                       </span>
 
+
                       <span className="faq-icon-circle w-9 h-9 rounded-full border border-black flex items-center justify-center flex-shrink-0 transition-transform duration-200">
 
                         {isOpen ? (
@@ -1367,7 +1747,9 @@ export default function Home() {
 
                     </button>
 
+
                     {isOpen && (
+
                       <div className="faq-answer mt-6 text-sm md:text-base text-gray-600 leading-[1.8] font-light max-w-[720px]">
 
                         <p>
@@ -1375,10 +1757,13 @@ export default function Home() {
                         </p>
 
                       </div>
+
                     )}
 
                   </div>
+
                 );
+
               }
             )}
 
@@ -1387,6 +1772,7 @@ export default function Home() {
         </div>
 
       </section>
+
 
       {/* =====================================================
           FOOTER
@@ -1399,6 +1785,7 @@ export default function Home() {
 
         <div className="footer-container max-w-[1350px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center mb-20 items-start">
 
+
           {/* FOOTER COLUMN 1 */}
 
           <div className="footer-col flex flex-col items-center">
@@ -1409,9 +1796,11 @@ export default function Home() {
               className="h-16 md:h-20 object-contain mb-8"
             />
 
+
             <h3 className="font-serif text-2xl tracking-[0.18em] mb-6 uppercase text-white font-normal">
               FOLLOW US
             </h3>
+
 
             <div className="footer-socials flex justify-center gap-5">
 
@@ -1423,6 +1812,7 @@ export default function Home() {
                 <FaFacebookF />
               </a>
 
+
               <a
                 href="#"
                 aria-label="Instagram"
@@ -1430,6 +1820,7 @@ export default function Home() {
               >
                 <FaInstagram />
               </a>
+
 
               <a
                 href="#"
@@ -1443,6 +1834,7 @@ export default function Home() {
 
           </div>
 
+
           {/* FOOTER COLUMN 2 */}
 
           <div className="footer-col flex flex-col items-center">
@@ -1450,6 +1842,7 @@ export default function Home() {
             <h2 className="font-serif text-2xl md:text-3xl tracking-[0.18em] mb-8 uppercase text-white font-normal">
               CONTACT
             </h2>
+
 
             <p className="text-base text-gray-200 mb-4 tracking-wide font-light">
 
@@ -1462,15 +1855,18 @@ export default function Home() {
 
             </p>
 
+
             <p className="text-base text-gray-200 mb-2 tracking-wide font-light">
               +92 309-925 2015
             </p>
+
 
             <p className="text-base text-gray-200 tracking-wide font-light">
               +92 304-805 5553
             </p>
 
           </div>
+
 
           {/* FOOTER COLUMN 3 */}
 
@@ -1480,14 +1876,19 @@ export default function Home() {
               LOCATIONS
             </h2>
 
+
             <p className="text-base text-gray-200 max-w-[320px] leading-relaxed mb-6 font-light">
+
               We providing the best photography
               services in Major Areas.
+
             </p>
+
 
             <p className="text-base text-gray-200 mb-2 tracking-wide font-light">
               Lahore – Islamabad
             </p>
+
 
             <p className="text-base text-gray-200 tracking-wide font-light">
               Karachi
@@ -1497,6 +1898,7 @@ export default function Home() {
 
         </div>
 
+
         {/* FOOTER BOTTOM */}
 
         <div className="footer-bottom max-w-[1350px] mx-auto text-center flex flex-col items-center gap-3 pt-10 border-t border-white/10 text-sm md:text-base text-gray-300 tracking-wide font-light">
@@ -1505,6 +1907,7 @@ export default function Home() {
             Copyright © 2026 – Waseem Saleem Photography |
             Terms &amp; Conditions | Privacy Policy
           </p>
+
 
           <p className="text-gray-300">
 
