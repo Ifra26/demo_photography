@@ -2251,19 +2251,15 @@ a {
   }
 
 
-  .hero-content-wrapper {
-    min-height: 100dvh;
-
-    height: 100%;
-
-    padding:
-      110px
-      24px
-      70px;
-
-    align-items:
-      flex-start;
-  }
+ .hero-content-wrapper {
+  min-height: 100dvh;
+  height: 100%;
+  padding:
+    145px
+    24px
+    70px;
+  align-items: flex-start;
+}
 
 
   .hero-copy {
