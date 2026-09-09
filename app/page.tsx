@@ -522,31 +522,64 @@ export default function Home() {
          CARDS REVEAL
       =================================================== */
 
-      gsap.utils
-        .toArray<HTMLElement>(
-          ".service-card, .styles article, .faq-item, .footer-col"
-        )
-        .forEach((item) => {
+      /* ===================================================
+   SERVICES CARDS REVEAL (staggered)
+=================================================== */
 
-          gsap.from(item, {
+gsap.from(".service-card", {
+  y: 60,
+  opacity: 0,
+  scale: 0.95,
+  duration: 0.8,
+  ease: "power3.out",
+  stagger: 0.15,
+  scrollTrigger: {
+    trigger: ".service-grid",
+    start: "top 85%",
+  },
+});
 
-            y: 35,
 
-            opacity: 0,
+/* ===================================================
+   STYLE CARDS REVEAL (staggered)
+=================================================== */
 
-            duration: 0.7,
+gsap.from(".styles article", {
+  y: 60,
+  opacity: 0,
+  scale: 0.95,
+  duration: 0.8,
+  ease: "power3.out",
+  stagger: 0.15,
+  scrollTrigger: {
+    trigger: ".styles .grid",
+    start: "top 85%",
+  },
+});
 
-            ease: "power2.out",
 
-            scrollTrigger: {
-              trigger: item,
-              start: "top 90%",
-            },
+/* ===================================================
+   FAQ + FOOTER REVEAL
+=================================================== */
 
-          });
+gsap.utils
+  .toArray<HTMLElement>(
+    ".faq-item, .footer-col"
+  )
+  .forEach((item) => {
 
-        });
+    gsap.from(item, {
+      y: 35,
+      opacity: 0,
+      duration: 0.7,
+      ease: "power2.out",
+      scrollTrigger: {
+        trigger: item,
+        start: "top 90%",
+      },
+    });
 
+  });
 
       /* ===================================================
          HORIZONTAL PHOTO GALLERY
